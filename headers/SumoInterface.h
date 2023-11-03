@@ -7,13 +7,13 @@
 // Undefine the signals keyword in Qt
 #undef signals
 
-
-#include "lib/sumo/TraCIAPI.h"
+#include "sumo-integrator-master/lib/sumo/TraCIAPI.h"
 
 // Redefine the signals keyword in Qt
 #define signals Q_SIGNALS
 
-class SumoInterface : public QObject {
+class SumoInterface : public QObject
+{
     Q_OBJECT
     Q_PROPERTY(QVariantList vehiclePositions READ getVehiclePositions NOTIFY vehiclePositionsChanged)
 public:
@@ -26,7 +26,6 @@ public:
 
     Q_INVOKABLE void updateVehiclePositions();
 
-
 signals:
     void vehiclePositionsChanged();
     void vehiclePositionsUpdated(const QVariantList &newPositions);
@@ -34,11 +33,6 @@ signals:
 private:
     TraCIAPI traci;
     QVariantList vehiclePositions;
-
-
-
 };
-
-
 
 #endif // SUMOINTERFACE_H

@@ -2,7 +2,7 @@
 #define INCLUDE_SUMOINTEGRATOR_CORE_SUMO_H
 
 
-#include <lib/sumo/libsumo.h>
+#include "../../sumo-integrator-master/lib/sumo/libsumo.h"
 
 #include <memory>
 

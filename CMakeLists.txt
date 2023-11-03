@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(BASE_PATH "/home/elias/TP_PROG/M1IM/Reseaux/c2csim")
+
 project(sumotest VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -36,17 +38,17 @@ set_target_properties(appsumotest PROPERTIES
 
 
 # Add the directory where the sumo-integrator library is located
-include_directories("/home/crowdev/sumo-integrator-master/include")
-include_directories("/home/crowdev/sumo-integrator-master/")
+include_directories("${BASE_PATH}/sumo-integrator-master/include")
+include_directories("${BASE_PATH}/sumo-integrator-master/")
 
 # Link the sumo-integrator library
-link_directories("/home/crowdev/sumo-integrator-master/bin")
+link_directories("${BASE_PATH}/sumo-integrator-master/bin")
 
 
 target_link_libraries(appsumotest
     PRIVATE Qt6::Quick
-    PRIVATE "/home/crowdev/sumo-integrator-master/bin/libsumointegrator.a"
-    PRIVATE "/home/crowdev/sumo-integrator-master/lib/sumo/libsumo.a"
+    PRIVATE "${BASE_PATH}/sumo-integrator-master/bin/libsumointegrator.a"
+    PRIVATE "${BASE_PATH}/sumo-integrator-master/lib/sumo/libsumo.a"
 )
 
 include(GNUInstallDirs)
