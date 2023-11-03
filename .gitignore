@@ -6,3 +6,7 @@ meta_types
 Makefile
 *.cmake
 CMakeCache.txt
+
+
+# Ignorer les fichiers cachés
+.*

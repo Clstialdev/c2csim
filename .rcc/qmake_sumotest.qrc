@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/sumotest">
-    <file alias="qmldir">/home/elias/TP_PROG/M1IM/Reseaux/c2csim/sumotest/qmldir</file>
-  </qresource>
-</RCC>
-
