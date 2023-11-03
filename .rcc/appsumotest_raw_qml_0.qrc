@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="/sumotest/">
+    <file alias="Main.qml">/home/elias/TP_PROG/M1IM/Reseaux/c2csim/Main.qml</file>
+    <file alias="images/car.png">/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/car.png</file>
+    <file alias="images/car2.png">/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/car2.png</file>
+  </qresource>
+</RCC>
+

@@ -1,0 +1,14 @@
+-rootPath
+/home/elias/TP_PROG/M1IM/Reseaux/c2csim
+-cmake-output
+-output-file
+/home/elias/TP_PROG/M1IM/Reseaux/c2csim/.qt_plugins/Qt6_QmlPlugins_Imports_appsumotest.cmake
+-importPath
+/home/elias/TP_PROG/M1IM/Reseaux/c2csim/sumotest
+-importPath
+/home/elias/TP_PROG/M1IM/Reseaux/c2csim
+-importPath
+/home/elias/Qt/6.6.0/gcc_64/./qml
+-qrcFiles
+/home/elias/TP_PROG/M1IM/Reseaux/c2csim/.rcc/qmake_sumotest.qrc
+/home/elias/TP_PROG/M1IM/Reseaux/c2csim/.rcc/appsumotest_raw_qml_0.qrc

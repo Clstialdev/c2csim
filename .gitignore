@@ -1,0 +1,8 @@
+# Liste des fichiers qui seront générés par cmake
+CMakeFiles
+sumotest
+qmltypes
+meta_types
+Makefile
+*.cmake
+CMakeCache.txt
