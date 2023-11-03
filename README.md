@@ -14,4 +14,7 @@ Pour compiler, remplacer le chemin ci-dessus par votre chemin menant à Qt6
 - $  sumo-gui --remote-port 6066 -c ./sumofiles/osm.sumocfg   
 Une fois l'exécutable généré, lancer la commande ci-dessus  
 - $ ./appsumotest  
-Lancer cette commande sur un autre terminal, en même temps que celle plus en haut  
+Lancer cette commande sur un autre terminal, en même temps que celle plus en haut
+
+Cliquer sur le bouton Play/Run de Sumo pour lancer la simulation.  
+Changement de port possible en modifiant la valeur dans SumoInterface.cpp
