@@ -22,7 +22,7 @@ Changement de port possible en modifiant la valeur dans SumoInterface.cpp
 ### Ajouter ça au Makefile pour gagner du temps (attention à bien mettre des tabulations avant sumo-gui et pas des espaces):
 
 run:  
-&nbsp;&nbsp;&nbsp;&nbsp;sumo-gui --remote-port 6066 -c "./sumofiles/osm.sumocfg"  
+&nbspnbspnbspnbsp;sumo-gui --remote-port 6066 -c "./sumofiles/osm.sumocfg"  
 .PHONY : run  
   
 restart: clean all run
