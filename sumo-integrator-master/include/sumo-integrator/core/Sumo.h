@@ -6,7 +6,7 @@
 
 //#include "../../sumo-integrator-master/lib/sumo/libsumo.h"
 //#include "../lib/sumo/libsumo.h"
-#include "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/sumo-integrator-master/lib/sumo/libsumo.h"
+#include "sumo-integrator-master/lib/sumo/libsumo.h"
 
 #include <memory>
 
