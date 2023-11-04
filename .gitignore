@@ -10,3 +10,8 @@ CMakeCache.txt
 
 # Ignorer les fichiers cachés
 .*
+
+# Font Awesome inutile
+fontawesome-free-6.4.2-desktop/svgs
+fontawesome-free-6.4.2-desktop/metadata
+fontawesome-free-6.4.2-desktop/*.txt
