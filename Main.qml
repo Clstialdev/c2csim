@@ -195,8 +195,8 @@ Window {
     // Zoom Controls
     Rectangle {
         id: rectangleOptions
-        width: 50
-        height: 100
+        width: parent.width * 0.1
+        height: parent.height * 0.3
         color: "transparent"
         border.color: "black"
         radius: 8
@@ -208,15 +208,16 @@ Window {
 
         Column {
             id: mainColumn
-            spacing: 5
+            spacing: speedOptions.height * 0.04
             anchors.centerIn: parent
 
             // To show more options
             Button {
-                width:20
-                height:20
+                width: speedOptions.width* 0.5
+                height: speedOptions.height * 0.15
                 text: "\uf0c9"
                 font.family: "FontAwesome"
+                font.pixelSize: mainWindow.symbolSize
                 onClicked: otherOptionsRect.visible = !otherOptionsRect.visible
                 // Ajoutez le code ou la logique pour gérer le clic du bouton de menu
             }
@@ -224,17 +225,19 @@ Window {
 
             // Zoom In Button
             Button {
-                width: 20
-                height: 20
+                width: speedOptions.width* 0.5
+                height: speedOptions.height * 0.15
                 text: "+"
+                font.pixelSize: mainWindow.symbolSize
                 onClicked: map.zoomLevel += 1
             }
 
             // Zoom Out Button
             Button {
-                width: 20
-                height: 20
+                width: speedOptions.width* 0.5
+                height: speedOptions.height * 0.15
                 text: "-"
+                font.pixelSize: mainWindow.symbolSize
                 onClicked: map.zoomLevel -= 1
             }
         }
@@ -242,38 +245,39 @@ Window {
 
     Rectangle {
         id: otherOptionsRect
-        width: 50
-        height: parent.height * 0.45
+        width: parent.width * 0.1
+        height: parent.height * 0.25
         color: "transparent"
         border.color: "black"
         radius: 8
-        visible: false // Initialement invisible
+        visible: false
         anchors {
             right: rectangleOptions.left
-            top: rectangleOptions.top - 10
+            top: rectangleOptions.top
             margins: 10
         }
 
         Column {
-            spacing: 5
+            spacing: speedOptions.height * 0.04
             anchors.centerIn: parent
 
 
             // Zoom In Button
             Button {
-                width: 20
-                height: 20
+                width: speedOptions.width* 0.5
+                height: speedOptions.height * 0.15
                 text: "+"
+                font.pixelSize: mainWindow.symbolSize
                 onClicked: map.zoomLevel += 1
             }
 
             Button {
-                width: 20
-                height: 20
+                width: speedOptions.width* 0.5
+                height: speedOptions.height * 0.15
                 text: "-"
+                font.pixelSize: mainWindow.symbolSize
                 onClicked: map.zoomLevel -= 1
             }
-            // Ajoutez ici le contenu du rectangle du menu, par exemple des boutons supplémentaires, des étiquettes, etc.
         }
     }
 
