@@ -4,6 +4,7 @@ import QtLocation
 import QtPositioning
 import QtQuick.Controls
 import QtQuick.Layouts 1.14
+//import QtQuick.Controls.Styles 1.4
 
 // Rendre le bg des boutons transparents
 // Décaler le rectangle des autres options
@@ -213,7 +214,7 @@ Window {
 
             // To show more options
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf0c9"
                 font.family: "FontAwesome"
@@ -225,7 +226,7 @@ Window {
 
             // Zoom In Button
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "+"
                 font.pixelSize: mainWindow.symbolSize
@@ -234,7 +235,7 @@ Window {
 
             // Zoom Out Button
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "-"
                 font.pixelSize: mainWindow.symbolSize
@@ -264,7 +265,7 @@ Window {
 
             // Zoom In Button
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "+"
                 font.pixelSize: mainWindow.symbolSize
@@ -272,7 +273,7 @@ Window {
             }
 
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "-"
                 font.pixelSize: mainWindow.symbolSize
@@ -298,10 +299,9 @@ Window {
             spacing: speedOptions.height * 0.04
             anchors.centerIn: parent
 
-
             // Zoom In Button
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf04a"
                 font.family: "FontAwesome"
@@ -310,7 +310,7 @@ Window {
             }
 
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf0d9"
                 font.family: "FontAwesome"
@@ -318,9 +318,12 @@ Window {
                 onClicked: map.zoomLevel -= 1
             }
 
+
+
+            // Play/Pause Button
             Button {
                 id: playButton
-                width: speedOptions.width* 0.5
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf04c"
                 font.family: "FontAwesome"
@@ -329,18 +332,19 @@ Window {
                     if (playButton.text === "\uf04b")
                     {
                         playButton.text = "\uf04c";
-                        // Ajoutez le code à exécuter lorsque la lecture est en pause
+                        // Add logic for when playback is paused
                     }
                     else
                     {
                         playButton.text = "\uf04b";
-                        // Ajoutez le code à exécuter lorsque la lecture reprend
+                        // Add logic for when playback resumes
                     }
                 }
+
             }
 
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf0da"
                 font.family: "FontAwesome"
@@ -349,13 +353,38 @@ Window {
             }
 
             Button {
-                width: speedOptions.width* 0.5
+                width: speedOptions.width* 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf04e"
                 font.family: "FontAwesome"
                 font.pixelSize: mainWindow.symbolSize
+                /* Installer QtQuick.Controls.Style
+                background: Rectangle {
+                    color: "black"
+                }
+                */
                 onClicked: map.zoomLevel -= 1
             }
+        }
+    }
+
+    Rectangle {
+        width: 0.15 * parent.width
+        height: 0.1 * parent.height
+        color: "black"
+        border.color: "black"
+        radius: 8
+
+        anchors {
+            bottom: parent.bottom
+            left: parent.left
+            margins: 10
+        }
+
+        Label {
+            text: "Vitesse: "+ map.center.longitude
+            font.pixelSize: mainWindow.symbolSize * 0.5
+            anchors.centerIn: parent
         }
     }
 
