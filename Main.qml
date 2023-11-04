@@ -79,7 +79,7 @@ Window {
     }
 
     Timer {
-        interval: 300 // Update every second
+        interval: 1000 // Update every second
         running: true
         repeat: true
         onTriggered: {
@@ -174,6 +174,49 @@ Window {
                         }
                     ]
                 }
+            }
+        }
+
+        //HEXAGONS START HERE
+        Component {
+            id: hexagonComponent
+            MapPolygon {
+                border.color: 'black'
+                border.width: 1
+                opacity: 0.7
+
+                property color originalColor: "transparent"
+
+                property int hexagonId: modelData
+                property real r: 0.001155
+                                 * 2 // The radius of the hexagon, adjust this to change the size
+                property real w: Math.sqrt(3) * r // Width of the hexagon
+                property real d: 1.5 * r // Adjusted vertical separation between hexagons
+                property real row: Math.floor(hexagonId / 13)
+                property real col: hexagonId % 13
+                property real xOffset: (row % 2) * (w / 2)
+                property real centerX: 47.7445 - 0.019 + col * w + xOffset
+                property real centerY: 7.3400 - 0.043 + row * d
+
+                function hexVertex(angle) {
+                    return QtPositioning.coordinate(
+                                centerX + r * Math.sin(angle),
+                                centerY + r * Math.cos(angle))
+                }
+
+                path: [hexVertex(
+                        Math.PI / 3 * 0), hexVertex(Math.PI / 3 * 1), hexVertex(
+                        Math.PI / 3 * 2), hexVertex(Math.PI / 3 * 3), hexVertex(
+                        Math.PI / 3 * 4), hexVertex(Math.PI / 3 * 5)]
+            }
+        }
+
+        Repeater {
+            id: hexagonRepeater
+            model: 312 // Number of hexagons to create
+            delegate: hexagonComponent
+            Component.onCompleted: {
+                console.log("hexagonRepeater is loaded, count:", count)
             }
         }
     }
