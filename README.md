@@ -19,9 +19,8 @@ Lancer cette commande sur un autre terminal, en même temps que celle plus en ha
 Cliquer sur le bouton Play/Run de Sumo pour lancer la simulation.  
 Changement de port possible en modifiant la valeur dans SumoInterface.cpp
 
-Ajouter ça au Makefile pour gagner du temps (attention à bien mettre des tabulations avant sumo-gui et pas des espaces):
+### Ajouter ça au Makefile pour gagner du temps (attention à bien mettre des tabulations avant sumo-gui et pas des espaces):
 
-# Pour lancer le programme
 run:
 	sumo-gui --remote-port 6066 -c "./sumofiles/osm.sumocfg"
 .PHONY : run
