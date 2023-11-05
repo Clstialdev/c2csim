@@ -4,21 +4,23 @@ import QtLocation
 import QtPositioning
 import QtQuick.Controls
 import QtQuick.Layouts 1.14
-//import QtQuick.Controls.Styles 1.4
 
+//import QtQuick.Controls.Styles 1.4
 import Sumo 1.0
 
 Window {
     id: mainWindow
-    width: 640
-    height: 480
+    width: 1440
+    height: 800
     visible: true
     title: qsTr("Suivi Voitures")
 
-    property real symbolSize: Math.min(mainWindow.width * 0.05, mainWindow.height * 0.05)
+    property real symbolSize: Math.min(mainWindow.width * 0.05,
+                                       mainWindow.height * 0.05)
 
     FontLoader {
-        source: "file:///home/elias/TP_PROG/M1IM/Reseaux/c2csim/fontawesome-free-6.4.2-desktop/otfs/Font Awesome 6 Free-Solid-900.otf"
+        id: fontAwesome
+        source: "fonts/fa.otf"
     }
 
     Plugin {
@@ -41,7 +43,7 @@ Window {
         activeMapType: supportedMapTypes[supportedMapTypes.length - 4]
         zoomLevel: 16 // Set an initial zoom level to focus on Mulhouse
         center: QtPositioning.coordinate(47.750839,
-        7.335888) // Set the center to Mulhouse
+                                         7.335888) // Set the center to Mulhouse
 
         onCenterChanged: {
             var minLat = 47.7
@@ -52,8 +54,7 @@ Window {
             var newLat = Math.min(Math.max(center.latitude, minLat), maxLat)
             var newLon = Math.min(Math.max(center.longitude, minLon), maxLon)
 
-            if (newLat !== center.latitude || newLon !== center.longitude)
-            {
+            if (newLat !== center.latitude || newLon !== center.longitude) {
                 center = QtPositioning.coordinate(newLat, newLon)
             }
         }
@@ -72,7 +73,7 @@ Window {
                 var dy = mouse.y - pressPos.y
 
                 var coord = map.toCoordinate(Qt.point(map.width / 2 - dx,
-                map.height / 2 - dy))
+                                                      map.height / 2 - dy))
                 map.center = coord
 
                 pressPos = Qt.point(mouse.x, mouse.y)
@@ -176,18 +177,18 @@ Window {
 
             delegate: MapQuickItem {
                 coordinate: QtPositioning.coordinate(modelData.latitude,
-                modelData.longitude)
+                                                     modelData.longitude)
                 anchorPoint.x: image.width / 2
                 anchorPoint.y: image.height / 1000
 
                 Component.onCompleted: {
                     console.log("Vehicle added:", modelData.latitude,
-                    modelData.longitude, modelData.id)
+                                modelData.longitude, modelData.id)
                 }
 
                 onCoordinateChanged: {
                     console.log("Vehicle moved:", coordinate.latitude,
-                    coordinate.longitude)
+                                coordinate.longitude)
                     image.rotation = modelData.rotation + 90
                     //                    if ((modelData.rotation > 45 && modelData.rotation < 130)
                     //                            || (modelData.rotation > -45
@@ -285,19 +286,18 @@ Window {
 
             // To show more options
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf0c9"
-                font.family: "FontAwesome"
+                font.family: fontAwesome.name
                 font.pixelSize: mainWindow.symbolSize
                 onClicked: otherOptionsRect.visible = !otherOptionsRect.visible
                 // Ajoutez le code ou la logique pour gérer le clic du bouton de menu
             }
 
-
             // Zoom In Button
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "+"
                 font.pixelSize: mainWindow.symbolSize
@@ -306,7 +306,7 @@ Window {
 
             // Zoom Out Button
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "-"
                 font.pixelSize: mainWindow.symbolSize
@@ -333,10 +333,9 @@ Window {
             spacing: speedOptions.height * 0.04
             anchors.centerIn: parent
 
-
             // Zoom In Button
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "+"
                 font.pixelSize: mainWindow.symbolSize
@@ -344,7 +343,7 @@ Window {
             }
 
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "-"
                 font.pixelSize: mainWindow.symbolSize
@@ -372,24 +371,22 @@ Window {
 
             // Zoom In Button
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf04a"
-                font.family: "FontAwesome"
+                font.family: fontAwesome.name
                 font.pixelSize: mainWindow.symbolSize
                 onClicked: map.zoomLevel += 1
             }
 
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf0d9"
-                font.family: "FontAwesome"
+                font.family: fontAwesome.name
                 font.pixelSize: mainWindow.symbolSize
                 onClicked: map.zoomLevel -= 1
             }
-
-
 
             // Play/Pause Button
             Button {
@@ -397,38 +394,36 @@ Window {
                 width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf04c"
-                font.family: "FontAwesome"
+                font.family: fontAwesome.name
                 font.pixelSize: mainWindow.symbolSize
                 onClicked: {
-                    if (playButton.text === "\uf04b")
-                    {
-                        playButton.text = "\uf04c";
+                    if (playButton.text === "\uf04b") {
+                        playButton.text = "\uf04c"
                         // Add logic for when playback is paused
-                    }
-                    else
-                    {
-                        playButton.text = "\uf04b";
+                    } else {
+                        playButton.text = "\uf04b"
                         // Add logic for when playback resumes
                     }
                 }
-
             }
 
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf0da"
-                font.family: "FontAwesome"
+                font.family: fontAwesome.name
                 font.pixelSize: mainWindow.symbolSize
                 onClicked: map.zoomLevel += 1
             }
 
             Button {
-                width: speedOptions.width* 0.55
+                width: speedOptions.width * 0.55
                 height: speedOptions.height * 0.15
                 text: "\uf04e"
-                font.family: "FontAwesome"
+                font.family: fontAwesome.name
                 font.pixelSize: mainWindow.symbolSize
+
+
                 /* Installer QtQuick.Controls.Style
                 background: Rectangle {
                     color: "black"
@@ -453,14 +448,13 @@ Window {
         }
 
         Label {
-            text: "Vitesse: "+ map.center.longitude
+            text: "Vitesse: " + map.center.longitude
             font.pixelSize: mainWindow.symbolSize * 0.5
             anchors.centerIn: parent
         }
     }
 
     // Position Display
-
     Rectangle {
         width: 0.75 * parent.width
         height: 50
@@ -477,5 +471,4 @@ Window {
             anchors.centerIn: parent
         }
     }
-
 }

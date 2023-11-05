@@ -19,6 +19,7 @@ qt_add_qml_module(appsumotest
     VERSION 1.0
     QML_FILES Main.qml
     RESOURCES images/car.png
+    RESOURCES fonts/fa.otf
     SOURCES headers/SumoInterface.h
     SOURCES SumoInterface.cpp
     SOURCES geoconverter.h geoconverter.cpp
