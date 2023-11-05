@@ -9,7 +9,7 @@ Pour compiler, remplacer le chemin ci-dessus par votre chemin menant à Qt6
 
 - $ make  
 
-- $ sumo-gui --remote-port 6066 -c ./sumofiles/osm.sumocfg
+- $ sumo-gui --remote-port 6066 -c ./sumofiles/osm.sumocfg  
   ou  
 - $ make run  
 Une fois l'exécutable généré, lancer une des 2 commandes ci-dessus
