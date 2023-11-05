@@ -6,11 +6,6 @@ import QtQuick.Controls
 import QtQuick.Layouts 1.14
 //import QtQuick.Controls.Styles 1.4
 
-// Rendre le bg des boutons transparents
-// Décaler le rectangle des autres options
-// Agrandir les boutons suivant la taille de l'écran
-// Mettre les autres boutons
-// Réussir à arrêter la circulation depuis Qt
 import Sumo 1.0
 
 Window {
