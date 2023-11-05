@@ -57,3 +57,17 @@ install(TARGETS appsumotest
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+add_custom_target(run
+    COMMAND sumo-gui --remote-port 6066 -c "./sumofiles/osm.sumocfg"
+    DEPENDS appsumotest
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+# Ajouter une cible "restart" qui dépend de "clean", "all" et "run"
+add_custom_target(restart
+    COMMAND make clean
+    COMMAND make
+    COMMAND make run
+    DEPENDS clean appsumotest run
+)
