@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(BASE_PATH "/home/elias/TP_PROG/M1IM/Reseaux/c2csim")
+set(BASE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
 
 project(sumotest VERSION 0.1 LANGUAGES CXX)
 
