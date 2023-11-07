@@ -373,18 +373,42 @@ Window {
                                                                 Button {
                                                                     width: speedOptions.width * 0.55
                                                                     height: speedOptions.height * 0.15
-                                                                    text: "\uf04a"
-                                                                    font.family: fontAwesome.name
-                                                                    font.pixelSize: mainWindow.symbolSize
+                                                                    //text: "\uf04a"
+                                                                    //font.family: fontAwesome.name
+                                                                    background: Rectangle {
+                                                                        color: "black"
+                                                                        border.color: "#26282a"
+                                                                        border.width: 1
+                                                                        radius: 4
+                                                                        Text {
+                                                                            anchors.centerIn: parent
+                                                                            text: "<<"
+                                                                            font.family: "Helvetica"  // Utilisez une police générique
+                                                                            font.pixelSize: mainWindow.symbolSize
+                                                                            color:"#A1DC30"
+                                                                        }
+                                                                    }
                                                                     onClicked: map.zoomLevel += 1
                                                                 }
 
                                                                 Button {
                                                                     width: speedOptions.width * 0.55
                                                                     height: speedOptions.height * 0.15
-                                                                    text: "\uf0d9"
-                                                                    font.family: fontAwesome.name
-                                                                    font.pixelSize: mainWindow.symbolSize
+                                                                    background: Rectangle {
+                                                                        color: "black"
+                                                                        border.color: "#26282a"
+                                                                        border.width: 1
+                                                                        radius: 4
+                                                                        Text {
+                                                                            anchors.centerIn: parent
+                                                                            // text: "\uf0d9"
+                                                                            //   font.family: fontAwesome.name
+                                                                            text: "<"
+                                                                            font.family: "Helvetica"  // Utilisez une police générique
+                                                                            font.pixelSize: mainWindow.symbolSize
+                                                                            color:"#A1DC30"
+                                                                        }
+                                                                    }
                                                                     onClicked: map.zoomLevel -= 1
                                                                 }
 
@@ -393,22 +417,24 @@ Window {
                                                                     id: playButton
                                                                     width: speedOptions.width * 0.55
                                                                     height: speedOptions.height * 0.15
-                                                                    text: "\uf04c"
+
+                                                                    font.pixelSize: mainWindow.symbolSize
                                                                     background: Rectangle {
                                                                         color: "black"
                                                                         border.color: "#26282a"
                                                                         border.width: 1
                                                                         radius: 4
+                                                                        Text {
+                                                                            anchors.centerIn: parent
+                                                                            // text: "\uf04c"
+                                                                            // font.family: fontAwesome.name
+                                                                            text: "||"
+                                                                            font.family: "Helvetica"  // Utilisez une police générique
+                                                                            font.pixelSize: mainWindow.symbolSize
+                                                                            color:"#A1DC30"
+                                                                        }
                                                                     }
-                                                                    contentItem: Text {
-                                                                        opacity: enabled ? 1.0 : 0.3
-                                                                        color: control.down ? "#17a81a" : "#A1DC30"
-                                                                        horizontalAlignment: Text.AlignHCenter
-                                                                        verticalAlignment: Text.AlignVCenter
-                                                                        elide: Text.ElideRight
-                                                                    }
-                                                                    font.family: fontAwesome.name
-                                                                    font.pixelSize: mainWindow.symbolSize
+
                                                                     onClicked: {
                                                                         if (playButton.text === "\uf04b")
                                                                         {
@@ -426,25 +452,42 @@ Window {
                                                                 Button {
                                                                     width: speedOptions.width * 0.55
                                                                     height: speedOptions.height * 0.15
-                                                                    text: "\uf0da"
-                                                                    font.family: fontAwesome.name
-                                                                    font.pixelSize: mainWindow.symbolSize
+                                                                    background: Rectangle {
+                                                                        color: "black"
+                                                                        border.color: "#26282a"
+                                                                        border.width: 1
+                                                                        radius: 4
+                                                                        Text {
+                                                                            anchors.centerIn: parent
+                                                                            // text: "\uf0da"
+                                                                            //   font.family: fontAwesome.name
+                                                                            text: ">"
+                                                                            font.family: "Helvetica"  // Utilisez une police générique
+                                                                            font.pixelSize: mainWindow.symbolSize
+                                                                            color:"#A1DC30"
+                                                                        }
+                                                                    }
                                                                     onClicked: map.zoomLevel += 1
                                                                 }
 
                                                                 Button {
                                                                     width: speedOptions.width * 0.55
                                                                     height: speedOptions.height * 0.15
-                                                                    text: "\uf04e"
-                                                                    font.family: fontAwesome.name
-                                                                    font.pixelSize: mainWindow.symbolSize
-
-
-                                                                    /* Installer QtQuick.Controls.Style
                                                                     background: Rectangle {
                                                                         color: "black"
+                                                                        border.color: "#26282a"
+                                                                        border.width: 1
+                                                                        radius: 4
+                                                                        Text {
+                                                                            anchors.centerIn: parent
+                                                                            // text: "\uf04e"
+                                                                            //   font.family: fontAwesome.name
+                                                                            text: ">>"
+                                                                            font.family: "Helvetica"  // Utilisez une police générique
+                                                                            font.pixelSize: mainWindow.symbolSize
+                                                                            color:"#A1DC30"
+                                                                        }
                                                                     }
-                                                                    */
                                                                     onClicked: map.zoomLevel -= 1
                                                                 }
                                                             }
