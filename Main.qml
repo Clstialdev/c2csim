@@ -19,6 +19,16 @@ Window {
         FontLoader {
             id: fontAwesome
             source: "fonts/fa.otf"
+            onStatusChanged: {
+                if (status === FontLoader.Ready)
+                {
+                    console.log("Police Font Awesome chargée avec succès !");
+                }
+                else if (status === FontLoader.Error)
+                {
+                    console.error("Erreur lors du chargement de la police Font Awesome");
+                }
+            }
         }
 
         Plugin {
@@ -459,10 +469,10 @@ Window {
                                                                         radius: 4
                                                                         Text {
                                                                             anchors.centerIn: parent
-                                                                            // text: "\uf0da"
-                                                                            //   font.family: fontAwesome.name
-                                                                            text: ">"
-                                                                            font.family: "Helvetica"  // Utilisez une police générique
+                                                                            text: "\uf0da"
+                                                                            font.family: fontAwesome.name
+                                                                            //text: ">"
+                                                                            //font.family: "Helvetica"  // Utilisez une police générique
                                                                             font.pixelSize: mainWindow.symbolSize
                                                                             color:"#A1DC30"
                                                                         }
