@@ -14,8 +14,8 @@ Window {
     title: qsTr("Suivi Voitures")
 
     property bool fontAwesomeLoaded: false;
-        property int timerInterval: 300;
-            property real coeffVitesse: 1;
+        property int timerInterval: 300; // pour pouvoir la modifier facilement
+            property real coeffVitesse: 1; // valeur affichée
 
                 property real symbolSize: Math.min(mainWindow.width * 0.05, mainWindow.height * 0.05)
 
@@ -497,11 +497,13 @@ Window {
                                                                                     playButtonText.text = "\uf04c";
                                                                                     // Add logic for when playback is paused
                                                                                     mainWindow.timerInterval = 300;
+                                                                                    mainWindow.coeffVitesse = 1
                                                                                 }
                                                                                 else {
                                                                                     playButtonText.text = "\uf04b";
                                                                                     // Add logic for when playback resumes
                                                                                     mainWindow.timerInterval = 100000;
+                                                                                    mainWindow.coeffVitesse = 0
                                                                                 }
                                                                             }
                                                                         }
@@ -555,7 +557,7 @@ Window {
 
                                                                 Rectangle {
                                                                     id: speedRectangle
-                                                                    width: 0.15 * parent.width
+                                                                    width: 0.08 * parent.width
                                                                     height: 0.55 * 0.15 * parent.height
                                                                     color: "black"
                                                                     border.color: "black"
@@ -569,7 +571,8 @@ Window {
                                                                     anchors.bottomMargin: 0.245* parent.height
 
                                                                     Label {
-                                                                        text: "Vitesse: " + mainWindow.coeffVitesse
+                                                                        text: "\uf017 : x" + mainWindow.coeffVitesse
+                                                                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
                                                                         font.pixelSize: mainWindow.symbolSize * 0.5
                                                                         anchors.centerIn: parent
                                                                     }
