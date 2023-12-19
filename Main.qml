@@ -184,6 +184,13 @@ Window {
                             anchorPoint.x: image.width / 2
                             anchorPoint.y: image.height / 1000
 
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    console.log("VOILA LE ID:", modelData.id, "ET LES COORDONNEES:", modelData.latitude, modelData.longitude);
+                                }
+                            }
+
                             Component.onCompleted: {
                                 console.log("Vehicle added:", modelData.latitude,
                                 modelData.longitude, modelData.id)
@@ -220,6 +227,14 @@ Window {
                                         //issue when car is going up and going right
                                     }
                                 ]
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        console.log("VOILA LE ID:", modelData.id, "ET LES COORDONNEES:", modelData.latitude, modelData.longitude);
+                                    }
+
+                                }
                             }
                         }
                     }
@@ -275,7 +290,7 @@ Window {
                                                                     width: parent.width * 0.1
                                                                     height: parent.height * 0.3
                                                                     color: "transparent"
-                                                                    border.color: "black"
+                                                                    //border.color: "black"
                                                                     radius: 8
                                                                     anchors {
                                                                         right: parent.right
@@ -353,7 +368,7 @@ Window {
                                                                     width: parent.width * 0.1
                                                                     height: parent.height * 0.25
                                                                     color: "transparent"
-                                                                    border.color: "black"
+                                                                    //border.color: "black"
                                                                     radius: 8
                                                                     visible: false
                                                                     anchors {
@@ -413,7 +428,7 @@ Window {
                                                                     width: parent.width * 0.1
                                                                     height: parent.height * 0.55
                                                                     color: "transparent"
-                                                                    border.color: "black"
+                                                                    //border.color: "black"
                                                                     radius: 8
                                                                     anchors {
                                                                         right: parent.right
@@ -575,10 +590,11 @@ Window {
                                                                         font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
                                                                         font.pixelSize: mainWindow.symbolSize * 0.5
                                                                         anchors.centerIn: parent
+                                                                        color:"#A1DC30"
                                                                     }
                                                                 }
 
-                                                                // Position Display
+                                                                /* // Position Display
                                                                 Rectangle {
                                                                     width: 0.75 * parent.width
                                                                     height: 50
@@ -595,4 +611,5 @@ Window {
                                                                         anchors.centerIn: parent
                                                                     }
                                                                 }
+                                                                */
                                                             }
