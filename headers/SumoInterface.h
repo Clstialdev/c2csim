@@ -24,6 +24,8 @@ public:
     Q_INVOKABLE void stopSimulation();
     QVariantList getVehiclePositions() const;
     Q_INVOKABLE void changeSpeedCar(const QVariant &vehicleID, double speed);
+    Q_INVOKABLE double recupVitesse(const QVariant &vehicleID);
+
     Q_INVOKABLE void updateVehiclePositions();
 
 signals:

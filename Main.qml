@@ -14,8 +14,11 @@ Window {
     title: qsTr("Suivi Voitures")
 
     property bool fontAwesomeLoaded: false;
-        property int timerInterval: 300; // pour pouvoir la modifier facilement
-            property real coeffVitesse: 1; // valeur affichée
+
+        property int timerInterval: 300 // pour pouvoir la modifier facilement
+            property real coeffVitesse: 1
+
+                property double current_speed; // valeur affichée
 
                 property real symbolSize: Math.min(mainWindow.width * 0.05, mainWindow.height * 0.05)
 
@@ -223,9 +226,21 @@ Window {
                                 MouseArea {
                                     anchors.fill: parent
                                     onClicked: {
-                                        console.log("VOILA LE ID:", modelData.id, "ET LES COORDONNEES:", modelData.latitude, modelData.longitude);
-                                        console.log("Type de modelData.id:", typeof modelData.id);
-                                        sumoInterface.changeSpeedCar(modelData.id.toString(), 0.0); // Remplacez par la nouvelle vitesse souhaitée
+                                        current_speed = sumoInterface.recupVitesse(modelData.id); // récupération de la vitesse
+                                        if (current_speed != 0.0)
+                                        {
+                                            sumoInterface.changeSpeedCar(modelData.id.toString(), 0.0); // on arrête la voiture
+                                            console.log("ca s'arrête");
+                                            // blah blah affichage du menu
+                                        }
+                                        else if (current_speed == 0)
+                                        {
+                                            sumoInterface.changeSpeedCar(modelData.id.toString(), -1); //-1 réinitialise la vitesse par Sumo
+                                            console.log("ca redémarre");
+                                        }
+
+                                        console.log("-------------------");
+
                                     }
 
                                 }
