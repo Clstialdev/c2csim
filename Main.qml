@@ -184,21 +184,13 @@ Window {
                             anchorPoint.x: image.width / 2
                             anchorPoint.y: image.height / 1000
 
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: {
-                                    console.log("VOILA LE ID:", modelData.id, "ET LES COORDONNEES:", modelData.latitude, modelData.longitude);
-                                }
-                            }
 
                             Component.onCompleted: {
-                                console.log("Vehicle added:", modelData.latitude,
-                                modelData.longitude, modelData.id)
+                                //console.log("Vehicle added:", modelData.latitude, modelData.longitude, modelData.id)
                             }
 
                             onCoordinateChanged: {
-                                console.log("Vehicle moved:", coordinate.latitude,
-                                coordinate.longitude)
+                                //console.log("Vehicle moved:", coordinate.latitude, coordinate.longitude)
                                 image.rotation = modelData.rotation + 90
                                 //                    if ((modelData.rotation > 45 && modelData.rotation < 130)
                                 //                            || (modelData.rotation > -45
@@ -232,6 +224,8 @@ Window {
                                     anchors.fill: parent
                                     onClicked: {
                                         console.log("VOILA LE ID:", modelData.id, "ET LES COORDONNEES:", modelData.latitude, modelData.longitude);
+                                        console.log("Type de modelData.id:", typeof modelData.id);
+                                        sumoInterface.changeSpeedCar(modelData.id.toString(), 0.0); // Remplacez par la nouvelle vitesse souhaitée
                                     }
 
                                 }

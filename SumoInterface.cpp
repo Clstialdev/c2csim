@@ -4,6 +4,7 @@
 
 SumoInterface::SumoInterface(QObject *parent) : QObject(parent)
 {
+    qRegisterMetaType<QString>("QString");
     // Initialize SUMO connection here if necessary
 }
 
@@ -25,8 +26,12 @@ void SumoInterface::stopSimulation()
     traci.close();
 }
 
-void SumoInterface::changeSpeedCar()
+void SumoInterface::changeSpeedCar(const QVariant &vehicleID, double speed)
 {
+    QString idString = vehicleID.toString();
+    qDebug() << "Vehicle ID:" << idString;
+    qDebug() << "New Speed:" << speed;
+    traci.vehicle.setSpeed(idString.toStdString(), speed);
 }
 
 QVariantList SumoInterface::getVehiclePositions() const
@@ -59,9 +64,12 @@ void SumoInterface::updateVehiclePositions()
         vehicle["longitude"] = result.lon;
         vehicle["rotation"] = heading;
         newPositions.append(vehicle);
+        /*
         qDebug() << "Vehicle ID:" << QString::fromStdString(id)
                  << "Latitude:" << result.lat
                  << "Longitude:" << result.lon;
+
+                 */
     }
 
     // Check if the positions have changed
