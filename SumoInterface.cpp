@@ -42,7 +42,7 @@ void SumoInterface::changeSpeedCar(const QVariant &vehicleID, double speed)
 double SumoInterface::recupVitesse(const QVariant &vehicleID)
 {
     QString idString = vehicleID.toString();
-    qDebug() << "Current Speed:" << traci.vehicle.getSpeed(idString.toStdString());
+    // qDebug() << "Current Speed:" << traci.vehicle.getSpeed(idString.toStdString());
 
     return traci.vehicle.getSpeed(idString.toStdString());
 }
