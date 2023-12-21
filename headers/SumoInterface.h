@@ -3,7 +3,9 @@
 
 #include <QObject>
 #include <QVariantList>
+#include <QColor>
 #include <QVariantMap>
+#include <QHash>
 // Undefine the signals keyword in Qt
 #undef signals
 
@@ -25,7 +27,7 @@ public:
     QVariantList getVehiclePositions() const;
     Q_INVOKABLE void changeSpeedCar(const QVariant &vehicleID, double speed);
     Q_INVOKABLE double recupVitesse(const QVariant &vehicleID);
-
+    Q_INVOKABLE QColor applyColor(const QString &idString);
     Q_INVOKABLE void updateVehiclePositions();
 
 signals:
@@ -35,6 +37,7 @@ signals:
 private:
     TraCIAPI traci;
     QVariantList vehiclePositions;
+    QHash<QString, QColor> vehicleColors;
 };
 
 #endif // SUMOINTERFACE_H

@@ -1,5 +1,11 @@
 #include "headers/SumoInterface.h"
 #include <iostream>
+#include <string>
+#include <QObject>
+#include <QDebug>
+#include <QColor>
+#include <QRandomGenerator>
+
 #include "geoconverter.h"
 
 bool first_init = true;
@@ -26,6 +32,34 @@ void SumoInterface::stopSimulation()
 {
     // Close the SUMO connection
     traci.close();
+}
+
+QColor SumoInterface::applyColor(const QString &idString)
+{
+    if (vehicleColors.contains(idString))
+    {
+        // Si oui, retourne la couleur existante
+        return vehicleColors.value(idString);
+    }
+    else
+    {
+        // Sinon, génère une nouvelle couleur aléatoire, associe-la à l'ID de la voiture, puis retourne la couleur
+        QColor randomColor = QColor::fromRgb(QRandomGenerator::global()->bounded(256),
+                                             QRandomGenerator::global()->bounded(256),
+                                             QRandomGenerator::global()->bounded(256));
+        vehicleColors.insert(idString, randomColor);
+
+        /*
+        libsumo::TraCIColor traciColor(
+            randomColor.red(),
+            randomColor.green(),
+            randomColor.blue(),
+            randomColor.alpha());
+
+        */
+        //        traci.vehicle.setColor(idString.toStdString(), traciColor);
+        return randomColor;
+    }
 }
 
 /***
@@ -77,24 +111,15 @@ void SumoInterface::updateVehiclePositions()
         vehicle["longitude"] = result.lon;
         vehicle["rotation"] = heading;
 
-        /*
-        if (first_init == true)
-        {
-            qDebug() << "dans la boucle init avec first_init= " << first_init;
-            // Vérifie si "arret" existe déjà
-            if (!vehicle.contains("arret") || vehicle["arret"].isNull())
-            {
-                vehicle["arret"] = false; // Si "arret" n'existe pas ou est null, attribuez-lui la valeur false
-            }
+        QColor carColor = applyColor(QString::fromStdString(id)); // Convertit la couleur en QVariant et l'associe à la clé "color" dans le QVariantMap
+        QVariant colorVariant = QVariant::fromValue(carColor);
+        vehicle["color"] = colorVariant;
 
-            // Vérifie si "original_speed" existe déjà et n'est pas défini
-            if (!vehicle.contains("original_speed") || vehicle["original_speed"].isNull())
-            {
-                vehicle["original_speed"] = -1.0; // Si "original_speed" n'existe pas ou est null, attribuez-lui la valeur -1.0
-            }
-        }
-        */
         newPositions.append(vehicle);
+
+        qDebug() << "Vehicle ID:" << QString::fromStdString(id)
+                 << "Color:" << carColor
+                 << "Color Variant:" << colorVariant;
         /*
         qDebug() << "Vehicle ID:" << QString::fromStdString(id)
                  << "Latitude:" << result.lat
