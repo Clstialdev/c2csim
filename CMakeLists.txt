@@ -18,12 +18,14 @@ qt_add_qml_module(appsumotest
     URI sumotest
     VERSION 1.0
     QML_FILES Main.qml
-    RESOURCES images/car.png
-    RESOURCES fonts/fa.otf
     SOURCES headers/SumoInterface.h
     SOURCES SumoInterface.cpp
     SOURCES geoconverter.h geoconverter.cpp
     RESOURCES images/car2.png
+    RESOURCES images/car.svg
+    RESOURCES images/car-cropped.svg
+    RESOURCES images/car.png
+    RESOURCES fonts/fa.otf
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

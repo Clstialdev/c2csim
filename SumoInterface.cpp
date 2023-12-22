@@ -49,15 +49,6 @@ QColor SumoInterface::applyColor(const QString &idString)
                                              QRandomGenerator::global()->bounded(256));
         vehicleColors.insert(idString, randomColor);
 
-        /*
-        libsumo::TraCIColor traciColor(
-            randomColor.red(),
-            randomColor.green(),
-            randomColor.blue(),
-            randomColor.alpha());
-
-        */
-        //        traci.vehicle.setColor(idString.toStdString(), traciColor);
         return randomColor;
     }
 }

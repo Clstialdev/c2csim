@@ -3,6 +3,7 @@ import QtQuick.Window
 import QtLocation
 import QtPositioning
 import QtQuick.Controls
+import QtGraphicalEffects
 
 import Sumo 1.0
 
@@ -207,23 +208,24 @@ Window {
 
                             sourceItem: Image {
                                 id: image
-                                source: "images/car.png"
-                                width: 20
-                                height: 20
+                                // pour changer l'image, aussi rajouter l'image dans le CMakeLists.txt (RESOURCES)
+                                source: "images/car-cropped.svg" 
+                                width: 15
+                                height: 6
                                 transform: [
                                     Rotation {
                                         origin.x: image.width / 2
-                                        origin.y: image.height / 2 - 10
+                                        //origin.y: image.height / 2 - 10 base value origin.y
+                                        origin.y: image.height - 1;
                                     },
                                     Translate {
                                         id: translate
-                                        y: -10
+                                        y: -4
                                         //issue when car is going up and going right
                                     }
                                 ]
 
                                 MouseArea {
-
                                     anchors.fill: parent
                                     onClicked: {
                                         // les boutons personnalisés prennent la valeur de la voiture cliquée
@@ -233,8 +235,7 @@ Window {
                                     }
 
                                 }
-
-                            }
+                            
                         }
                     }
 
