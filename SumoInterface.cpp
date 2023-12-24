@@ -6,6 +6,13 @@
 #include <QColor>
 #include <QRandomGenerator>
 
+#include <QFile>
+#include <QSvgRenderer>
+#include <QPixmap>
+#include <QPainter>
+#include <QCoreApplication>
+#include <QIcon>
+
 #include "geoconverter.h"
 
 bool first_init = true;
@@ -64,6 +71,87 @@ void SumoInterface::changeSpeedCar(const QVariant &vehicleID, double speed)
     traci.vehicle.setSpeed(idString.toStdString(), speed);
 }
 
+void SumoInterface::applyColorToSVG(const QString &id)
+{
+    qDebug() << "Entrée dans applyColortoSVG";
+    QColor carColor = applyColor(id); //.value<QColor>();
+    qDebug() << "Conversion en QColor réussie";
+
+    // Charger le fichier SVG
+    QString originalFilePath = QCoreApplication::applicationDirPath() + "/images/car-cropped.svg";
+
+    QFile file(originalFilePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Erreur lors de l'ouverture du fichier SVG";
+        return;
+    }
+
+    QTextStream in(&file);
+    QString svgContent = in.readAll();
+    file.close();
+
+    // Modifier la couleur dans le fichier SVG
+    QString colorString = carColor.name(); // Obtenir le nom de la couleur (par exemple, "#RRGGBB")
+    svgContent.replace("fill=\"#000000\"", "fill=\"" + colorString + "\"");
+
+    // Générer un nom de fichier unique en utilisant l'ID de la voiture
+    QString uniqueFileName = QCoreApplication::applicationDirPath() + "/images/generated/car_modified_" + id + ".svg";
+
+    // Sauvegarder le fichier SVG modifié avec un nom de fichier unique
+    QFile modifiedFile(uniqueFileName);
+    if (!modifiedFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Erreur lors de la création du fichier SVG modifié";
+        return;
+    }
+
+    QTextStream out(&modifiedFile);
+    out << svgContent;
+    modifiedFile.close();
+}
+
+/*
+void SumoInterface::applyColorToSVG(const QString &id, const QString &colorString)
+{
+    qDebug() << "Entrée dans applyColortoSVG";
+    // QColor carColor = colorVariant; //.value<QColor>();
+    qDebug() << "Conversion en QColor réussie";
+
+    // Charger le fichier SVG
+    QFile file("images/car-cropped.svg");
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug() << "Erreur lors de l'ouverture du fichier SVG";
+        return;
+    }
+
+    QTextStream in(&file);
+    QString svgContent = in.readAll();
+    file.close();
+
+    // Modifier la couleur dans le fichier SVG
+    // QString colorString = carColor.name(); // Obtenir le nom de la couleur (par exemple, "#RRGGBB")
+    svgContent.replace("fill=\"#000000\"", "fill=\"" + colorString + "\"");
+
+    // Générer un nom de fichier unique en utilisant l'ID de la voiture
+    QString uniqueFileName = "images/generated/car_modified_" + id + ".svg";
+
+    // Sauvegarder le fichier SVG modifié avec un nom de fichier unique
+    QFile modifiedFile(uniqueFileName);
+    if (!modifiedFile.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug() << "Erreur lors de la création du fichier SVG modifié";
+        return;
+    }
+
+    QTextStream out(&modifiedFile);
+    out << svgContent;
+    modifiedFile.close();
+}
+
+*/
+
 double SumoInterface::recupVitesse(const QVariant &vehicleID)
 {
     QString idString = vehicleID.toString();
@@ -75,6 +163,9 @@ double SumoInterface::recupVitesse(const QVariant &vehicleID)
 QVariantList SumoInterface::getVehiclePositions() const
 {
     return vehiclePositions;
+}
+void SumoInterface::updateHexagonColor()
+{
 }
 
 void SumoInterface::updateVehiclePositions()
@@ -108,10 +199,11 @@ void SumoInterface::updateVehiclePositions()
 
         newPositions.append(vehicle);
 
+        /*
         qDebug() << "Vehicle ID:" << QString::fromStdString(id)
                  << "Color:" << carColor
                  << "Color Variant:" << colorVariant;
-        /*
+
         qDebug() << "Vehicle ID:" << QString::fromStdString(id)
                  << "Latitude:" << result.lat
                  << "Longitude:" << result.lon;

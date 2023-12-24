@@ -6,7 +6,7 @@ project(sumotest VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick QuickControls2)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Quick QuickControls2 Svg)
 
 qt_standard_project_setup()
 
@@ -50,6 +50,7 @@ link_directories("${BASE_PATH}/sumo-integrator-master/bin")
 
 target_link_libraries(appsumotest
     PRIVATE Qt6::Quick Qt6::QuickControls2
+    PRIVATE Qt6::Svg
     PRIVATE "${BASE_PATH}/sumo-integrator-master/bin/libsumointegrator.a"
     PRIVATE "${BASE_PATH}/sumo-integrator-master/lib/sumo/libsumo.a"
 )

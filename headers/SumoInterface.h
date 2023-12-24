@@ -28,7 +28,9 @@ public:
     Q_INVOKABLE void changeSpeedCar(const QVariant &vehicleID, double speed);
     Q_INVOKABLE double recupVitesse(const QVariant &vehicleID);
     Q_INVOKABLE QColor applyColor(const QString &idString);
+    Q_INVOKABLE void applyColorToSVG(const QString &id);
     Q_INVOKABLE void updateVehiclePositions();
+    Q_INVOKABLE void updateHexagonColor();
 
 signals:
     void vehiclePositionsChanged();
