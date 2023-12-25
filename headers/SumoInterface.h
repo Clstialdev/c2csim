@@ -30,15 +30,20 @@ public:
     Q_INVOKABLE QColor applyColor(const QString &idString);
     Q_INVOKABLE void applyColorToSVG(const QString &id);
     Q_INVOKABLE void updateVehiclePositions();
+
     Q_INVOKABLE void updateHexagonColor();
+    Q_INVOKABLE void addHexagon(const QString &idHex, qreal xCenter, qreal yCenter);
+    Q_INVOKABLE bool isPointInsideHexagon(qreal pointX, qreal pointY, qreal hexagonXCenter, qreal hexagonYCenter);
 
 signals:
     void vehiclePositionsChanged();
     void vehiclePositionsUpdated(const QVariantList &newPositions);
+    void updateHexagonColor(const QString &hexagonId, const QString &colorName);
 
 private:
     TraCIAPI traci;
     QVariantList vehiclePositions;
+    QVariantList listHexagons;
     QHash<QString, QColor> vehicleColors;
 };
 

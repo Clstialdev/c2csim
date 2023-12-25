@@ -141,10 +141,29 @@ Window {
             // Update vehicle positions on the map
         }
     }
-
+    function getHexagonItemById(hexagonId) {
+        // Implémentation pour obtenir l'objet hexagone correspondant à hexagonId
+        for (var i = 0; i < hexagonRepeater.count; ++i) {
+            var hexagonItem = hexagonRepeater.itemAt(i);
+            if (hexagonItem.hexagonId === hexagonId) {
+                return hexagonItem;
+            }
+        }
+        return null; // Ajustez ceci en fonction de votre logique de récupération réelle
+    }
     Connections {
         target: sumoInterface
+
+        // est censé récupérer le signal envoyé par updateHexagonColor dans SumoInterface.cpp
+        function onUpdateHexagonColor(hexagonId, colorName) {
+        // Met à jour la couleur de l'hexagone dans votre QML
+        var hexagonItem = getHexagonItemById(hexagonId);
+        if (hexagonItem !== null) {
+            hexagonItem.updateHexagonColor(colorName);
+        }
     }
+    }
+    
 
     Plugin {
         id: itemsOverlayPlugin
@@ -219,7 +238,7 @@ Window {
                         //SumoInterface.applyColorToSVG(modelData.id, modelData.color.toString());
                         sumoInterface.applyColorToSVG(modelData.id.toString());
 
-                        // Utiliser le fichier SVG modifié comme source pour l'image
+                        // attention c'est un chemin absolu, à changer
                         source = "file://" + "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/generated/car_modified_" + modelData.id + ".svg"
                         //source ="images/generated/car_modified_" + modelData.id + ".svg";
                     }
@@ -261,8 +280,8 @@ Window {
                 border.color: 'black'
                 border.width: 1
                 opacity: 0.7
+                color: "transparent"
 
-                property color originalColor: "red"
 
                 property int hexagonId: modelData
                 property real r: 0.001155
@@ -275,8 +294,14 @@ Window {
                 property real centerX: 47.7445 - 0.019 + col * w + xOffset;
                 property real centerY: 7.3400 - 0.043 + row * d
                 Component.onCompleted: {
-                    console.log("voilà le modelData des HEXAGONES: "+modelData.toString());
-                    console.log("voilà hexagonComponent: "+hexagonComponent.toString());
+                    sumoInterface.addHexagon(modelData.toString(),centerX,centerY);
+                    //console.log("voilà le modelData des HEXAGONES: "+modelData.toString());
+                }
+
+                // partie finale du processus de changement de couleur, appelé par
+                //la fonction onUpdateHexagonColor un peu plus haut dans le code
+                function updateHexagonColor(hexagonColor) {
+                    color = hexagonColor; // Met à jour la couleur de l'hexagone
                 }
 
                 function hexVertex(angle)

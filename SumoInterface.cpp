@@ -71,11 +71,12 @@ void SumoInterface::changeSpeedCar(const QVariant &vehicleID, double speed)
     traci.vehicle.setSpeed(idString.toStdString(), speed);
 }
 
+// crée des images svg de couleur différentes (une pour chaque voiture)
+// et les places dans le dossier images/generated
 void SumoInterface::applyColorToSVG(const QString &id)
 {
-    qDebug() << "Entrée dans applyColortoSVG";
-    QColor carColor = applyColor(id); //.value<QColor>();
-    qDebug() << "Conversion en QColor réussie";
+    QColor carColor = applyColor(id);
+    QString colorString = carColor.name(); // Obtenir le nom de la couleur (par exemple, "#RRGGBB")
 
     // Charger le fichier SVG
     QString originalFilePath = QCoreApplication::applicationDirPath() + "/images/car-cropped.svg";
@@ -92,7 +93,6 @@ void SumoInterface::applyColorToSVG(const QString &id)
     file.close();
 
     // Modifier la couleur dans le fichier SVG
-    QString colorString = carColor.name(); // Obtenir le nom de la couleur (par exemple, "#RRGGBB")
     svgContent.replace("fill=\"#000000\"", "fill=\"" + colorString + "\"");
 
     // Générer un nom de fichier unique en utilisant l'ID de la voiture
@@ -111,47 +111,6 @@ void SumoInterface::applyColorToSVG(const QString &id)
     modifiedFile.close();
 }
 
-/*
-void SumoInterface::applyColorToSVG(const QString &id, const QString &colorString)
-{
-    qDebug() << "Entrée dans applyColortoSVG";
-    // QColor carColor = colorVariant; //.value<QColor>();
-    qDebug() << "Conversion en QColor réussie";
-
-    // Charger le fichier SVG
-    QFile file("images/car-cropped.svg");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        qDebug() << "Erreur lors de l'ouverture du fichier SVG";
-        return;
-    }
-
-    QTextStream in(&file);
-    QString svgContent = in.readAll();
-    file.close();
-
-    // Modifier la couleur dans le fichier SVG
-    // QString colorString = carColor.name(); // Obtenir le nom de la couleur (par exemple, "#RRGGBB")
-    svgContent.replace("fill=\"#000000\"", "fill=\"" + colorString + "\"");
-
-    // Générer un nom de fichier unique en utilisant l'ID de la voiture
-    QString uniqueFileName = "images/generated/car_modified_" + id + ".svg";
-
-    // Sauvegarder le fichier SVG modifié avec un nom de fichier unique
-    QFile modifiedFile(uniqueFileName);
-    if (!modifiedFile.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        qDebug() << "Erreur lors de la création du fichier SVG modifié";
-        return;
-    }
-
-    QTextStream out(&modifiedFile);
-    out << svgContent;
-    modifiedFile.close();
-}
-
-*/
-
 double SumoInterface::recupVitesse(const QVariant &vehicleID)
 {
     QString idString = vehicleID.toString();
@@ -160,12 +119,97 @@ double SumoInterface::recupVitesse(const QVariant &vehicleID)
     return traci.vehicle.getSpeed(idString.toStdString());
 }
 
+// regarde pour chaque hexagone si il y a une voiture dedans
+// si il y a une voiture dedans, on récupère la couleur de la voiture,
+// et on la met en argument du signal qu'on envoie au fichier main.qml
+
+// il faudrait sûrement essayer avec un seul hexagone (par exemple le premier)
+//  pour savoir s'il détecte bien les voitures, où si les coordonnées ne sont pas les bonnes
+void SumoInterface::updateHexagonColor()
+{
+    qDebug() << "Dans updateHexagonColor()";
+
+    // Parcours de la liste des hexagones
+    for (const QVariant &hexagonVariant : listHexagons)
+    {
+        QVariantMap hexagonMap = hexagonVariant.toMap();
+        QString hexagonId = hexagonMap["id"].toString();
+        qreal hexagonLatCenter = hexagonMap["latCenter"].toReal();
+        qreal hexagonLonCenter = hexagonMap["lonCenter"].toReal();
+
+        // Parcours de la liste des voitures
+        for (const QVariant &voitureVariant : vehiclePositions)
+        {
+            QVariantMap voitureMap = voitureVariant.toMap();
+            qreal voitureX = voitureMap["x"].toReal();
+            qreal voitureY = voitureMap["y"].toReal();
+
+            QVariant carColorVariant = voitureMap["color"];
+            QColor color = carColorVariant.value<QColor>();
+            QString colorName = color.name();
+            // colorName aura une valeur de type #de6t45e
+            // peut-être qu'il faut changer pour avoir la couleur sous forme
+            // de nom par exemple "red" plutôt que la valeur #de6t45e
+
+            // Vérifie si la voiture est à l'intérieur de l'hexagone
+            if (isPointInsideHexagon(voitureX, voitureY, hexagonLatCenter, hexagonLonCenter))
+            {
+                qDebug() << "Hexagone " << hexagonId << " , nouvelle couleur: " << colorName;
+                // Met à jour la couleur de l'hexagone avec la couleur de la voiture
+                emit updateHexagonColor(hexagonId, colorName);
+            }
+        }
+    }
+}
+
+// regarde si une voiture est dans un certain hexagone
+bool SumoInterface::isPointInsideHexagon(qreal pointX, qreal pointY, qreal hexagonLatCenter, qreal hexagonLonCenter)
+{
+    // Coordonnées de l'hexagone
+    qreal hexagonRadius = 10.0; // le rayon pose surement problème, il faut trouver la bonne valeur
+    GeoCoordinates point = GeoConverter::convertGeo(pointX, pointX);
+
+    // Calcul des distances du point aux coordonnées du centre de l'hexagone
+    qreal dx = abs(point.lat - hexagonLatCenter);
+    qreal dy = abs(point.lon - hexagonLonCenter);
+    qDebug() << "Dans isPointInsideHexagon()";
+
+    // Vérification de la condition d'appartenance à l'hexagone
+    if (dx > hexagonRadius || dy > hexagonRadius)
+    {
+        return false;
+    }
+
+    // Si le point se trouve dans la "boîte englobante" de l'hexagone, on vérifie plus précisément
+    if (dx + dy <= hexagonRadius)
+    {
+        return true;
+    }
+
+    // Vérification des coins de l'hexagone
+    qreal distanceToCorners = sqrt(dx * dx + dy * dy);
+    return distanceToCorners <= hexagonRadius;
+}
+
+// on crée une liste contenant les id et coordonnées des hexagones
+// pour pouvoir les utiliser dans ce fichier plus facilement
+void SumoInterface::addHexagon(const QString &idHex, qreal xCenter, qreal yCenter)
+{
+    GeoCoordinates result = GeoConverter::convertGeo(xCenter, yCenter);
+
+    QVariantMap hexagonMap;
+    hexagonMap["id"] = idHex;
+    hexagonMap["latCenter"] = result.lat;
+    hexagonMap["lonCenter"] = result.lon;
+
+    listHexagons.append(hexagonMap);
+
+    // qDebug() << "Adding hexagon with ID:" << idHex << "at (" << xCenter << "," << yCenter << ")";
+}
+
 QVariantList SumoInterface::getVehiclePositions() const
 {
     return vehiclePositions;
-}
-void SumoInterface::updateHexagonColor()
-{
 }
 
 void SumoInterface::updateVehiclePositions()
