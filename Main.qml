@@ -127,6 +127,36 @@ Window {
         sumoInterface.startSimulation()
     }
 
+    function getHexagonItemById(hexId) {
+
+        // Implémentation pour obtenir l'objet hexagone correspondant à hexagonId
+        for (var i = 0; i < hexagonRepeater.count; ++i) {
+            var hexagonItem = hexagonRepeater.itemAt(i);
+            if (hexagonItem.hexagonId == hexId) {
+                //console.log(hexagonItem.hexagonId+" =? "+hexId+ ":",hexagonItem !== null);
+                return hexagonItem;
+            }
+        }
+        return null; // Ajustez ceci en fonction de votre logique de récupération réelle
+    }
+    function updateHexagonDisplay(hexagonColors) {
+        // Met à jour la couleur de l'hexagone dans votre QML
+        for (var i = 0; i < hexagonColors.length; ++i) {
+            var hexagonInfo = hexagonColors[i];
+            var hexagonId = hexagonInfo["id"];
+            var colorName = hexagonInfo["color"];
+
+          //  console.log("QML: Hexagone " + hexagonId + " , nouvelle couleur: " + colorName);
+
+            var newHexagonItem = getHexagonItemById(hexagonId);
+            if (newHexagonItem !== null) {
+                console.log("colorName va se faire update:",colorName);
+                newHexagonItem.updateHexagonColor(colorName);
+            }
+        }
+    }
+    
+
     Timer {
         interval: mainWindow.timerInterval// Update every second
         running: true
@@ -136,34 +166,22 @@ Window {
             //                 console.log("Timer triggered");
             sumoInterface.updateVehiclePositions()
             var positions = sumoInterface.vehiclePositions
-            sumoInterface.updateHexagonColor()
+            sumoInterface.updateHexagonColor();
+            updateHexagonDisplay(sumoInterface.hexagonColors);
+
             //                 console.log("Vehicle positions:", positions);
             // Update vehicle positions on the map
         }
     }
-    function getHexagonItemById(hexagonId) {
-        // Implémentation pour obtenir l'objet hexagone correspondant à hexagonId
-        for (var i = 0; i < hexagonRepeater.count; ++i) {
-            var hexagonItem = hexagonRepeater.itemAt(i);
-            if (hexagonItem.hexagonId === hexagonId) {
-                return hexagonItem;
-            }
-        }
-        return null; // Ajustez ceci en fonction de votre logique de récupération réelle
-    }
+    
     Connections {
         target: sumoInterface
 
         // est censé récupérer le signal envoyé par updateHexagonColor dans SumoInterface.cpp
-        function onUpdateHexagonColor(hexagonId, colorName) {
-        // Met à jour la couleur de l'hexagone dans votre QML
-        var hexagonItem = getHexagonItemById(hexagonId);
-        if (hexagonItem !== null) {
-            hexagonItem.updateHexagonColor(colorName);
-        }
     }
-    }
+
     
+
 
     Plugin {
         id: itemsOverlayPlugin
@@ -284,6 +302,8 @@ Window {
 
 
                 property int hexagonId: modelData
+                property color hexTestColor:"transparent"
+                property string debugText: hexagonId+ "\n" + hexTestColor  // Nouvelle propriété pour le texte de débogage
                 property real r: 0.001155
                                  * 2 // The radius of the hexagon, adjust this to change the size
                 property real w: Math.sqrt(3) * r // Width of the hexagon
@@ -293,15 +313,40 @@ Window {
                 property real xOffset: (row % 2) * (w / 2);
                 property real centerX: 47.7445 - 0.019 + col * w + xOffset;
                 property real centerY: 7.3400 - 0.043 + row * d
+
+
+                /// DEBUG ///
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log("Hexagon ID:", parent.hexagonId);
+                        console.log("hexTestColor:", parent.hexTestColor);
+                        console.log("color:", parent.color);
+                    }
+
+                    Text {
+                        text: "<div style='color: black; font-size: 12px; text-align: center;'>" + parent.debugText+ "</div>"
+                    }
+                }
+
+
+
                 Component.onCompleted: {
                     sumoInterface.addHexagon(modelData.toString(),centerX,centerY);
                     //console.log("voilà le modelData des HEXAGONES: "+modelData.toString());
                 }
-
+                // Utilisation d'un Text pour afficher le texte de débogage au-dessus de l'hexagone
+                
                 // partie finale du processus de changement de couleur, appelé par
                 //la fonction onUpdateHexagonColor un peu plus haut dans le code
                 function updateHexagonColor(hexagonColor) {
+                    
+
                     color = hexagonColor; // Met à jour la couleur de l'hexagone
+                    hexTestColor = hexagonColor;
+                    console.log("hexTestColor:", hexTestColor);
+
+                    console.log("hexagonColor:", hexagonColor);
                 }
 
                 function hexVertex(angle)
@@ -316,6 +361,8 @@ Window {
                         Math.PI / 3 * 2), hexVertex(Math.PI / 3 * 3), hexVertex(
                         Math.PI / 3 * 4), hexVertex(Math.PI / 3 * 5)]
             }
+           
+
         }
 
         Repeater {

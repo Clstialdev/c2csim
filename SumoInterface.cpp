@@ -127,7 +127,8 @@ double SumoInterface::recupVitesse(const QVariant &vehicleID)
 //  pour savoir s'il détecte bien les voitures, où si les coordonnées ne sont pas les bonnes
 void SumoInterface::updateHexagonColor()
 {
-    qDebug() << "Dans updateHexagonColor()";
+    QVariantList newHexagonColors;
+    // qDebug() << "Dans updateHexagonColor()";
 
     // Parcours de la liste des hexagones
     for (const QVariant &hexagonVariant : listHexagons)
@@ -154,11 +155,17 @@ void SumoInterface::updateHexagonColor()
             // Vérifie si la voiture est à l'intérieur de l'hexagone
             if (isPointInsideHexagon(voitureX, voitureY, hexagonLatCenter, hexagonLonCenter))
             {
-                qDebug() << "Hexagone " << hexagonId << " , nouvelle couleur: " << colorName;
-                // Met à jour la couleur de l'hexagone avec la couleur de la voiture
-                emit updateHexagonColor(hexagonId, colorName);
+                // qDebug() << "Hexagone " << hexagonId << " , nouvelle couleur: " << colorName;
+                //  Met à jour la couleur de l'hexagone avec la couleur de la voiture
+                newHexagonColors.append(QVariantMap{{"id", hexagonId}, {"color", colorName}});
             }
         }
+    }
+
+    if (newHexagonColors != hexagonColors)
+    {
+        hexagonColors = newHexagonColors;
+        emit hexagonColorsChanged();
     }
 }
 
@@ -166,13 +173,13 @@ void SumoInterface::updateHexagonColor()
 bool SumoInterface::isPointInsideHexagon(qreal pointX, qreal pointY, qreal hexagonLatCenter, qreal hexagonLonCenter)
 {
     // Coordonnées de l'hexagone
-    qreal hexagonRadius = 10.0; // le rayon pose surement problème, il faut trouver la bonne valeur
+    qreal hexagonRadius = 0.001155 * 2; // le rayon pose surement problème, il faut trouver la bonne valeur
     GeoCoordinates point = GeoConverter::convertGeo(pointX, pointX);
 
     // Calcul des distances du point aux coordonnées du centre de l'hexagone
     qreal dx = abs(point.lat - hexagonLatCenter);
     qreal dy = abs(point.lon - hexagonLonCenter);
-    qDebug() << "Dans isPointInsideHexagon()";
+    // qDebug() << "Dans isPointInsideHexagon()";
 
     // Vérification de la condition d'appartenance à l'hexagone
     if (dx > hexagonRadius || dy > hexagonRadius)
@@ -210,6 +217,11 @@ void SumoInterface::addHexagon(const QString &idHex, qreal xCenter, qreal yCente
 QVariantList SumoInterface::getVehiclePositions() const
 {
     return vehiclePositions;
+}
+
+QVariantList SumoInterface::getHexagonColors() const
+{
+    return hexagonColors;
 }
 
 void SumoInterface::updateVehiclePositions()

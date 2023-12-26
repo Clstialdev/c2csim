@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 // Undefine the signals keyword in Qt
 #undef signals
 
@@ -87,8 +88,18 @@ int main(int argc, char *argv[])
     //    }
 
     QGuiApplication app(argc, argv);
-    qmlRegisterType<SumoInterface>("Sumo", 1, 0, "SumoInterface");
+    qmlRegisterType<SumoInterface>("Sumo", 1, 0, "SumoInterface"); ///
     QQmlApplicationEngine engine;
+
+    SumoInterface sumoInterface; /// Create the application core with signals and slots
+
+    QQmlContext *context = engine.rootContext(); ///
+
+    /* We load the object into the context to establish the connection,
+     * and also define the name "appCore" by which the connection will occur
+     * */
+    context->setContextProperty("sumoInterface", &sumoInterface); ///
+
     const QUrl url(u"qrc:/sumotest/Main.qml"_qs);
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreationFailed,
