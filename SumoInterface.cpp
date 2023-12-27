@@ -133,6 +133,8 @@ void SumoInterface::updateHexagonColor()
     // Parcours de la liste des hexagones
     for (const QVariant &hexagonVariant : listHexagons)
     {
+
+        // récupération des coordonnées de chaque hexagone
         QVariantMap hexagonMap = hexagonVariant.toMap();
         QString hexagonId = hexagonMap["id"].toString();
         qreal hexagonLatCenter = hexagonMap["latCenter"].toReal();
@@ -142,8 +144,8 @@ void SumoInterface::updateHexagonColor()
         for (const QVariant &voitureVariant : vehiclePositions)
         {
             QVariantMap voitureMap = voitureVariant.toMap();
-            qreal voitureX = voitureMap["x"].toReal();
-            qreal voitureY = voitureMap["y"].toReal();
+            qreal voitureLat = voitureMap["latitude"].toReal();
+            qreal voitureLon = voitureMap["longitude"].toReal();
 
             QVariant carColorVariant = voitureMap["color"];
             QColor color = carColorVariant.value<QColor>();
@@ -153,11 +155,11 @@ void SumoInterface::updateHexagonColor()
             // de nom par exemple "red" plutôt que la valeur #de6t45e
 
             // Vérifie si la voiture est à l'intérieur de l'hexagone
-            if (isPointInsideHexagon(voitureX, voitureY, hexagonLatCenter, hexagonLonCenter))
+            if (isPointInsideHexagon(voitureLat, voitureLon, hexagonLatCenter, hexagonLonCenter))
             {
-                // qDebug() << "Hexagone " << hexagonId << " , nouvelle couleur: " << colorName;
+                qDebug() << "Hexagone " << hexagonId << " a voiture " << voitureMap["id"];
                 //  Met à jour la couleur de l'hexagone avec la couleur de la voiture
-                newHexagonColors.append(QVariantMap{{"id", hexagonId}, {"color", colorName}});
+                newHexagonColors.append(QVariantMap{{"id", hexagonId}, {"couleur", colorName}});
             }
         }
     }
@@ -170,32 +172,37 @@ void SumoInterface::updateHexagonColor()
 }
 
 // regarde si une voiture est dans un certain hexagone
-bool SumoInterface::isPointInsideHexagon(qreal pointX, qreal pointY, qreal hexagonLatCenter, qreal hexagonLonCenter)
+bool SumoInterface::isPointInsideHexagon(qreal pointLat, qreal pointLon, qreal hexagonLatCenter, qreal hexagonLonCenter)
 {
+    qDebug() << "pointLat:" << pointLat << ", "
+             << "pointLon:" << pointLon;
+
     // Coordonnées de l'hexagone
-    qreal hexagonRadius = 0.001155 * 2; // le rayon pose surement problème, il faut trouver la bonne valeur
-    GeoCoordinates point = GeoConverter::convertGeo(pointX, pointX);
+    qreal hexagonRadius = 0.001155 * 0.554; // le rayon pose surement problème, il faut trouver la bonne valeur
 
     // Calcul des distances du point aux coordonnées du centre de l'hexagone
-    qreal dx = abs(point.lat - hexagonLatCenter);
-    qreal dy = abs(point.lon - hexagonLonCenter);
+    qreal dx = abs(pointLat - hexagonLatCenter);
+    qreal dy = abs(pointLon - hexagonLonCenter);
     // qDebug() << "Dans isPointInsideHexagon()";
+
+    qreal distanceToCorners = sqrt(dx * dx + dy * dy);
 
     // Vérification de la condition d'appartenance à l'hexagone
     if (dx > hexagonRadius || dy > hexagonRadius)
     {
+        qDebug() << "Voiture(" << pointLat << "," << pointLon << ") PAS dans Hexagone de centre (" << hexagonLatCenter << "," << hexagonLonCenter << ")";
         return false;
     }
 
     // Si le point se trouve dans la "boîte englobante" de l'hexagone, on vérifie plus précisément
-    if (dx + dy <= hexagonRadius)
+    if (dx + dy <= hexagonRadius || distanceToCorners <= hexagonRadius)
     {
+        qDebug() << "Voiture(" << pointLat << "," << pointLon << ") dans Hexagone de centre (" << hexagonLatCenter << "," << hexagonLonCenter << ")";
         return true;
     }
 
-    // Vérification des coins de l'hexagone
-    qreal distanceToCorners = sqrt(dx * dx + dy * dy);
-    return distanceToCorners <= hexagonRadius;
+    qDebug() << "Voiture(" << pointLat << "," << pointLon << ") PAS dans Hexagone de centre (" << hexagonLatCenter << "," << hexagonLonCenter << ")";
+    return false;
 }
 
 // on crée une liste contenant les id et coordonnées des hexagones
@@ -206,12 +213,18 @@ void SumoInterface::addHexagon(const QString &idHex, qreal xCenter, qreal yCente
 
     QVariantMap hexagonMap;
     hexagonMap["id"] = idHex;
+
+    /*
+        hexagonMap["latCenter"] = xCenter;
+        hexagonMap["lonCenter"] = yCenter;
+     */
     hexagonMap["latCenter"] = result.lat;
     hexagonMap["lonCenter"] = result.lon;
 
     listHexagons.append(hexagonMap);
 
     // qDebug() << "Adding hexagon with ID:" << idHex << "at (" << xCenter << "," << yCenter << ")";
+    // qDebug() << "Adding hexagonLambert with ID:" << idHex << "at (" << hexagonMap["latCenter"] << "," << hexagonMap["lonCenter"] << ")";
 }
 
 QVariantList SumoInterface::getVehiclePositions() const

@@ -144,14 +144,13 @@ Window {
         for (var i = 0; i < hexagonColors.length; ++i) {
             var hexagonInfo = hexagonColors[i];
             var hexagonId = hexagonInfo["id"];
-            var colorName = hexagonInfo["color"];
+            var colorName = hexagonInfo["couleur"];
 
-          //  console.log("QML: Hexagone " + hexagonId + " , nouvelle couleur: " + colorName);
+            //  console.log("QML: Hexagone " + hexagonId + " , nouvelle couleur: " + colorName);
 
             var newHexagonItem = getHexagonItemById(hexagonId);
             if (newHexagonItem !== null) {
-                console.log("colorName va se faire update:",colorName);
-                newHexagonItem.updateHexagonColor(colorName);
+                newHexagonItem.updateHexagonColorQML(colorName,hexagonId);
             }
         }
     }
@@ -176,8 +175,6 @@ Window {
     
     Connections {
         target: sumoInterface
-
-        // est censé récupérer le signal envoyé par updateHexagonColor dans SumoInterface.cpp
     }
 
     
@@ -245,6 +242,9 @@ Window {
 
                 sourceItem: Image {
                     id: image
+
+                    property string messageText: ""  // message diffusé aux véhicules à proximité
+
                     // pour changer l'image, aussi rajouter l'image dans le CMakeLists.txt (RESOURCES)
                     //source: "images/car-cropped.svg"
                     Component.onCompleted: {
@@ -298,14 +298,12 @@ Window {
                 border.color: 'black'
                 border.width: 1
                 opacity: 0.7
-                color: "transparent"
+                color: sumoInterface.hexagonColors[index] ? sumoInterface.hexagonColors[index].couleur : "transparent"
 
 
                 property int hexagonId: modelData
                 property color hexTestColor:"transparent"
-                property string debugText: hexagonId+ "\n" + hexTestColor  // Nouvelle propriété pour le texte de débogage
-                property real r: 0.001155
-                                 * 2 // The radius of the hexagon, adjust this to change the size
+                property real r: 0.001155 * 2 // The radius of the hexagon, adjust this to change the size
                 property real w: Math.sqrt(3) * r // Width of the hexagon
                 property real d: 1.5 * r // Adjusted vertical separation between hexagons
                 property real row: Math.floor(hexagonId / 13)
@@ -323,10 +321,6 @@ Window {
                         console.log("hexTestColor:", parent.hexTestColor);
                         console.log("color:", parent.color);
                     }
-
-                    Text {
-                        text: "<div style='color: black; font-size: 12px; text-align: center;'>" + parent.debugText+ "</div>"
-                    }
                 }
 
 
@@ -339,14 +333,12 @@ Window {
                 
                 // partie finale du processus de changement de couleur, appelé par
                 //la fonction onUpdateHexagonColor un peu plus haut dans le code
-                function updateHexagonColor(hexagonColor) {
-                    
+                function updateHexagonColorQML(hexagonColor,hexId) {
+                    if(hexId == hexagonId){
 
-                    color = hexagonColor; // Met à jour la couleur de l'hexagone
-                    hexTestColor = hexagonColor;
-                    console.log("hexTestColor:", hexTestColor);
-
-                    console.log("hexagonColor:", hexagonColor);
+                        color = hexagonColor; // Met à jour la couleur de l'hexagone
+                        hexTestColor = hexagonColor;
+                    }
                 }
 
                 function hexVertex(angle)
@@ -361,16 +353,21 @@ Window {
                         Math.PI / 3 * 2), hexVertex(Math.PI / 3 * 3), hexVertex(
                         Math.PI / 3 * 4), hexVertex(Math.PI / 3 * 5)]
             }
-           
+
 
         }
 
         Repeater {
             id: hexagonRepeater
-            model: 312 // Number of hexagons to create
+            model: 312 // Utilisez la taille de hexagonColors comme modèle
             delegate: hexagonComponent
             Component.onCompleted: {
                 console.log("hexagonRepeater is loaded, count:", count)
+            }
+
+            onModelChanged: {
+                // Mettez à jour la taille du modèle lorsqu'elle change
+                model = sumoInterface.hexagonColors.length;
             }
         }
     }
