@@ -209,18 +209,18 @@ bool SumoInterface::isPointInsideHexagon(qreal pointLat, qreal pointLon, qreal h
 // pour pouvoir les utiliser dans ce fichier plus facilement
 void SumoInterface::addHexagon(const QString &idHex, qreal xCenter, qreal yCenter)
 {
-    GeoCoordinates result = GeoConverter::convertGeo(xCenter, yCenter);
+    // GeoCoordinates result = GeoConverter::convertGeo(xCenter, yCenter);
 
     QVariantMap hexagonMap;
     hexagonMap["id"] = idHex;
 
-    /*
-        hexagonMap["latCenter"] = xCenter;
-        hexagonMap["lonCenter"] = yCenter;
-     */
+    hexagonMap["latCenter"] = xCenter;
+    hexagonMap["lonCenter"] = yCenter;
+
+    /* tentative sans lambert
     hexagonMap["latCenter"] = result.lat;
     hexagonMap["lonCenter"] = result.lon;
-
+    */
     listHexagons.append(hexagonMap);
 
     // qDebug() << "Adding hexagon with ID:" << idHex << "at (" << xCenter << "," << yCenter << ")";

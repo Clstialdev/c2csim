@@ -2,6 +2,7 @@
 #include <QDebug>
 
 // v2
+/*
 GeoCoordinates GeoConverter::convertGeo(double latitude, double longitude)
 {
     // Given points
@@ -32,11 +33,11 @@ GeoCoordinates GeoConverter::convertGeo(double latitude, double longitude)
     convertedLat = qRound(convertedLat * 1000000) / 1000000.0;
     convertedLon = qRound(convertedLon * 1000000) / 1000000.0;
 
-    qDebug() << "Coordonnées Lambert93 :" << convertedLat << "," << convertedLon << " à partir de " << latitude << "," << longitude;
+    // qDebug() << "Coordonnées Lambert93 :" << convertedLat << "," << convertedLon << " à partir de " << latitude << "," << longitude;
 
     return {convertedLat, convertedLon};
 }
-/*
+*/
 GeoCoordinates GeoConverter::convertGeo(double x, double y)
 {
     // Given points
@@ -67,4 +68,3 @@ GeoCoordinates GeoConverter::convertGeo(double x, double y)
 
     return {lat, lon};
 }
-*/
