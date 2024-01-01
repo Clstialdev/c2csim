@@ -5,7 +5,6 @@
 #include <QDebug>
 #include <QColor>
 #include <QRandomGenerator>
-
 #include <QFile>
 #include <QSvgRenderer>
 #include <QPixmap>
@@ -128,17 +127,17 @@ double SumoInterface::recupVitesse(const QVariant &vehicleID)
 void SumoInterface::updateHexagonColor()
 {
     QVariantList newHexagonColors;
-    // qDebug() << "Dans updateHexagonColor()";
 
     // Parcours de la liste des hexagones
     for (const QVariant &hexagonVariant : listHexagons)
     {
-
-        // récupération des coordonnées de chaque hexagone
         QVariantMap hexagonMap = hexagonVariant.toMap();
         QString hexagonId = hexagonMap["id"].toString();
         qreal hexagonLatCenter = hexagonMap["latCenter"].toReal();
         qreal hexagonLonCenter = hexagonMap["lonCenter"].toReal();
+
+        bool carInside = false;
+        QString colorName;
 
         // Parcours de la liste des voitures
         for (const QVariant &voitureVariant : vehiclePositions)
@@ -147,20 +146,26 @@ void SumoInterface::updateHexagonColor()
             qreal voitureLat = voitureMap["latitude"].toReal();
             qreal voitureLon = voitureMap["longitude"].toReal();
 
-            QVariant carColorVariant = voitureMap["color"];
-            QColor color = carColorVariant.value<QColor>();
-            QString colorName = color.name();
-            // colorName aura une valeur de type #de6t45e
-            // peut-être qu'il faut changer pour avoir la couleur sous forme
-            // de nom par exemple "red" plutôt que la valeur #de6t45e
-
             // Vérifie si la voiture est à l'intérieur de l'hexagone
             if (isPointInsideHexagon(voitureLat, voitureLon, hexagonLatCenter, hexagonLonCenter))
             {
-                qDebug() << "Hexagone " << hexagonId << " a voiture " << voitureMap["id"];
-                //  Met à jour la couleur de l'hexagone avec la couleur de la voiture
-                newHexagonColors.append(QVariantMap{{"id", hexagonId}, {"couleur", colorName}});
+                carInside = true;
+                QVariant carColorVariant = voitureMap["color"];
+                QColor color = carColorVariant.value<QColor>();
+                colorName = color.name();
+                break;
             }
+        }
+
+        if (carInside)
+        {
+            //  Met à jour la couleur de l'hexagone avec la couleur de la voiture
+            newHexagonColors.append(QVariantMap{{"id", hexagonId}, {"couleur", colorName}});
+        }
+        else
+        {
+            // Met à jour la couleur de l'hexagone à transparent
+            newHexagonColors.append(QVariantMap{{"id", hexagonId}, {"couleur", "transparent"}});
         }
     }
 
@@ -174,35 +179,28 @@ void SumoInterface::updateHexagonColor()
 // regarde si une voiture est dans un certain hexagone
 bool SumoInterface::isPointInsideHexagon(qreal pointLat, qreal pointLon, qreal hexagonLatCenter, qreal hexagonLonCenter)
 {
-    qDebug() << "pointLat:" << pointLat << ", "
-             << "pointLon:" << pointLon;
+    qreal radius = 0.0025; // Adjust this value to fit your hexagons
 
-    // Coordonnées de l'hexagone
-    qreal hexagonRadius = 0.001155 * 0.554; // le rayon pose surement problème, il faut trouver la bonne valeur
-
-    // Calcul des distances du point aux coordonnées du centre de l'hexagone
-    qreal dx = abs(pointLat - hexagonLatCenter);
-    qreal dy = abs(pointLon - hexagonLonCenter);
-    // qDebug() << "Dans isPointInsideHexagon()";
-
-    qreal distanceToCorners = sqrt(dx * dx + dy * dy);
-
-    // Vérification de la condition d'appartenance à l'hexagone
-    if (dx > hexagonRadius || dy > hexagonRadius)
-    {
-        qDebug() << "Voiture(" << pointLat << "," << pointLon << ") PAS dans Hexagone de centre (" << hexagonLatCenter << "," << hexagonLonCenter << ")";
-        return false;
+    // Calculate the vertices of the hexagon
+    QList<QPointF> hexagonVertices;
+    for (int i = 0; i < 6; ++i) {
+        qreal angle = 60 * i - 30;
+        qreal x = hexagonLatCenter + radius * qCos(qDegreesToRadians(angle));
+        qreal y = hexagonLonCenter + radius * qSin(qDegreesToRadians(angle));
+        hexagonVertices.append(QPointF(x, y));
     }
 
-    // Si le point se trouve dans la "boîte englobante" de l'hexagone, on vérifie plus précisément
-    if (dx + dy <= hexagonRadius || distanceToCorners <= hexagonRadius)
-    {
-        qDebug() << "Voiture(" << pointLat << "," << pointLon << ") dans Hexagone de centre (" << hexagonLatCenter << "," << hexagonLonCenter << ")";
-        return true;
+    // Use the ray casting algorithm to determine if the point is inside the hexagon
+    int i, j, nvert = hexagonVertices.size();
+    bool inside = false;
+    for (i = 0, j = nvert - 1; i < nvert; j = i++) {
+        if (((hexagonVertices[i].y() > pointLon) != (hexagonVertices[j].y() > pointLon)) &&
+            (pointLat < (hexagonVertices[j].x() - hexagonVertices[i].x()) * (pointLon - hexagonVertices[i].y()) / (hexagonVertices[j].y() - hexagonVertices[i].y()) + hexagonVertices[i].x())) {
+            inside = !inside;
+        }
     }
 
-    qDebug() << "Voiture(" << pointLat << "," << pointLon << ") PAS dans Hexagone de centre (" << hexagonLatCenter << "," << hexagonLonCenter << ")";
-    return false;
+    return inside;
 }
 
 // on crée une liste contenant les id et coordonnées des hexagones
