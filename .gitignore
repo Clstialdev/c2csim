@@ -9,6 +9,8 @@ CMakeCache.txt
 
 # Les images de voitures générées
 images/generated/*.svg
+!images/generated/
+
 # Ignorer les fichiers cachés
 .*
 

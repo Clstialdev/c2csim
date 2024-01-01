@@ -313,6 +313,7 @@ Window {
                 property real centerY: 7.3400 - 0.043 + row * d
 
 
+                /*
                 /// DEBUG ///
                 MouseArea {
                     anchors.fill: parent
@@ -322,6 +323,7 @@ Window {
                         console.log("color:", parent.color);
                     }
                 }
+                */
 
 
 
