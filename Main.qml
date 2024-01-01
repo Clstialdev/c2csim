@@ -404,7 +404,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf1b9"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -485,7 +485,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf04a"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -509,7 +509,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf04c"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -534,7 +534,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf04b"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -557,7 +557,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf04e"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -600,7 +600,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf04a"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -622,7 +622,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf0d9"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -647,7 +647,7 @@ Window {
                         id: playButtonText
                         anchors.centerIn: parent
                         text: "\uf04c"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -681,7 +681,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf0da"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -703,7 +703,7 @@ Window {
                     Text {
                         anchors.centerIn: parent
                         text: "\uf04e"
-                        font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
                         font.pixelSize: mainWindow.symbolSize
                         color:"#A1DC30"
                     }
@@ -734,7 +734,7 @@ Window {
 
         Label {
             text: "\uf017 : x" + mainWindow.coeffVitesse
-            font.family: fontAwesomeLoaded ? fontAwesomeLoader.name : "FontAwesome"
+            font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
             font.pixelSize: mainWindow.symbolSize * 0.5
             anchors.centerIn: parent
             color:"#A1DC30"
