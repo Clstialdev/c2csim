@@ -81,6 +81,7 @@ void SumoInterface::applyColorToSVG(const QString &id)
     // Charger le fichier SVG
     // QString originalFilePath = "/home/crowdev/qtproj/sumotest/sumotest/images/car-cropped.svg";
     QString originalFilePath = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/car-cropped.svg";
+    // QString originalFilePath = QCoreApplication::applicationDirPath() + "/images/car-cropped.svg";
 
     QFile file(originalFilePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -98,8 +99,8 @@ void SumoInterface::applyColorToSVG(const QString &id)
 
     // Générer un nom de fichier unique en utilisant l'ID de la voiture
     QString uniqueFileName = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/generated/car_modified_" + id + ".svg";
-
-    // Sauvegarder le fichier SVG modifié avec un nom de fichier unique
+    // QString uniqueFileName = QCoreApplication::applicationDirPath() + "/images/generated/car_modified_" + id + ".svg";
+    //  Sauvegarder le fichier SVG modifié avec un nom de fichier unique
     QFile modifiedFile(uniqueFileName);
     if (!modifiedFile.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -194,7 +195,7 @@ void SumoInterface::updateHexagonColor()
 
             double signalStrength = calculateSignalStrength(distance, signalStrengthAtOneMeter);
 
-            qDebug() << "ID véhicule: " << voitureMap["id"].toString() << " ID de l'hexagone: " << hexagonId << " et signal strength: " << signalStrength;
+            // qDebug() << "ID véhicule: " << voitureMap["id"].toString() << " ID de l'hexagone: " << hexagonId << " et signal strength: " << signalStrength;
 
             // Comparison to the current signal
             // qDebug() << signalStrength << " >= " << hexagonStrength << "?";
@@ -342,6 +343,8 @@ void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleI
             }
         }
     }
+
+    emit vehiclesInRangeChanged();
 }
 
 void SumoInterface::updateVehiclePositions()

@@ -19,6 +19,8 @@ class SumoInterface : public QObject
     Q_OBJECT
     Q_PROPERTY(QVariantList vehiclePositions READ getVehiclePositions NOTIFY vehiclePositionsChanged)
     Q_PROPERTY(QVariantList hexagonColors READ getHexagonColors NOTIFY hexagonColorsChanged)
+    Q_PROPERTY(QHash<QString, double> vehiclesInRange READ getVehiclesInRange NOTIFY vehiclesInRangeChanged)
+
 public:
     explicit SumoInterface(QObject *parent = nullptr);
     ~SumoInterface();
@@ -51,6 +53,7 @@ signals:
     void vehiclePositionsUpdated(const QVariantList &newPositions);
     void sendHexagonColor(const QString &hexagonId, const QString &colorName);
     void hexagonColorsChanged();
+    void vehiclesInRangeChanged();
 
 private:
     TraCIAPI traci;

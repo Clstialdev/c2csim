@@ -161,15 +161,10 @@ Window {
         running: true
         repeat: true
         onTriggered: {
-
-            //                 console.log("Timer triggered");
             sumoInterface.updateVehiclePositions()
             var positions = sumoInterface.vehiclePositions
             sumoInterface.updateHexagonColor();
             updateHexagonDisplay(sumoInterface.hexagonColors);
-
-            //                 console.log("Vehicle positions:", positions);
-            // Update vehicle positions on the map
         }
     }
     
@@ -248,7 +243,7 @@ Window {
                     // pour changer l'image, aussi rajouter l'image dans le fichier CMakeLists.txt (RESOURCES)
                     //source: "images/car-cropped.svg"
                     Component.onCompleted: {
-                        //console.log("Type de modelData.id :", typeof modelData.id);
+                        //console.log("modelData.id :", modelData.id);
                         //console.log("Type de modelData.color :", typeof modelData.color);
                         //console.log("modelData.color :", modelData.color);
 
@@ -280,7 +275,13 @@ Window {
                         onClicked: {
                             // les boutons personnalisés prennent la valeur de la voiture cliquée
                             carOptionsColumn.current_car_id = modelData.id
-                            console.log("--------clic sur voiture-----------");
+                            console.log("voiture "+modelData.id);
+                            if(messageText != "")
+                            {
+                                console.log("Dernier message recu: "+messageText);
+                            } else {
+                                console.log("Pas de message recu");
+                            }
 
                         }
 
@@ -315,7 +316,6 @@ Window {
 
                 Component.onCompleted: {
                     sumoInterface.addHexagon(modelData.toString(),centerX,centerY);
-                    console.log("voilà le modelData des HEXAGONES: "+modelData.toString());
                 }
                 
                 // partie finale du processus de changement de couleur, appelé par
@@ -441,10 +441,9 @@ Window {
 
     Rectangle {
         id: otherOptionsRect
-        width: parent.width * 0.1
+        width: parent.width * 0.08
         height: parent.height * 0.45
         color: "transparent"
-        border.color: "red"
         radius: 8
         visible: false
         anchors {
@@ -456,7 +455,11 @@ Window {
         Column {
             id: carOptionsColumn
             spacing: speedOptions.height * 0.04
-            anchors.centerIn: parent
+            anchors {
+                right: parent.right
+                top: parent.top
+                margins: 10
+            }
             property string current_car_id: "";
 
             // << Button pour la voiture
@@ -579,47 +582,54 @@ Window {
         }
         Column {
             id: broadcastColumn
-            spacing: speedOptions.height * 0.04
-            anchors.centerIn: parent
+            spacing: speedOptions.height * 0.03
+            anchors {
+                //right: parent.right + carOptionsColumn.width + 40
+                right: parent.left
+                top: parent.top
+                margins: 10
+            }
 
-            Button {
-                width: speedOptions.width * 0.55
-                height: speedOptions.height * 0.15
-                background: Rectangle {
-                    color: "black"
-                    border.color: "#26282a"
-                    border.width: 1
-                    radius: 4
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "M" // Utilisez le symbole approprié pour la fonction que vous souhaitez
-                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
-                        font.pixelSize: mainWindow.symbolSize
-                        color:"#A1DC30"
-                    }
-                }
-                onClicked: {
+            TextField {
+                id: myTextField
+                width: speedOptions.width *1.2
+                height: speedOptions.height * 0.12
+                placeholderText: "Saisissez votre message"
+                onAccepted: {
+                    var texteSaisi = myTextField.text;
+                    console.log("Texte saisi :", texteSaisi);
                     if (carOptionsColumn.current_car_id.toString() !== "") {
                         sumoInterface.findCarsAffectedByFrequency(carOptionsColumn.current_car_id.toString());
                         console.log("Recherche des voitures affectées par la fréquence de la voiture " + carOptionsColumn.current_car_id);
-                        console.log(vehiclesInRange);
 
-                        var vehiclesInRange = sumoInterface.getVehiclesInRange();
-                        var keys = Object.keys(vehiclesInRange);
+                        // partie qui pose problème
+                        var vehicles = sumoInterface.getVehiclesInRange();
+                        console.log(vehicles);
 
+
+                        var keys = Object.keys(vehicles);
                         console.log("Nombre d'éléments dans vehiclesInRange:", keys.length);
 
+                        var model = sumoInterface.vehiclePositions;
+
                         for (var i = 0; i < keys.length; ++i) {
-                            var vehicleID = keys[i];
+                            var vehicleID = "veh"+keys[i]; // pour avoir le format des id des voitures qml
                             console.log("Vehicle ID:", vehicleID);
-                            console.log("hhh");
+
+                            for (var i = 0; i < model.count; ++i) {
+                                if (model.get(i).id === vehicleID) {
+                                    // Vous avez trouvé la voiture avec l'ID spécifié
+                                    // Modifiez la propriété messageText ici
+                                    model.setProperty(i, "messageText", texteSaisi);
+                                }
+                            }
+
                         }
+                        
                     } else {
                         console.log("Aucune voiture sélectionnée.");
                     }
                 }
-
             }
         }
 
