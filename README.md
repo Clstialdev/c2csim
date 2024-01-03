@@ -1,9 +1,10 @@
 # Attention aux chemins absolus
 
-- Dans Main.qml : source = "file://" + "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/generated/car_modified_" + modelData.id + ".svg"
-- Dans la fonction applyColorToSVG() de SumoInterface.cpp:
-  QString originalFilePath = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/car-cropped.svg";
-  QString uniqueFileName = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/generated/car_modified_" + id + ".svg";
+Dans Main.qml : 
+- source = "file://" + "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/generated/car_modified_" + modelData.id + ".svg"
+Dans la fonction applyColorToSVG() de SumoInterface.cpp:
+- QString originalFilePath = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/car-cropped.svg";
+- QString uniqueFileName = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/generated/car_modified_" + id + ".svg";
 
 
 # Initialisation de l'environnement de travail
