@@ -208,6 +208,7 @@ Window {
         //                         }
         //                 }
         MapItemView {
+            id:mapItemView
             model: sumoInterface.vehiclePositions
 
             delegate: MapQuickItem {
@@ -237,8 +238,6 @@ Window {
 
                 sourceItem: Image {
                     id: image
-
-                    property string messageText: ""  // message diffusé aux véhicules à proximité
 
                     // pour changer l'image, aussi rajouter l'image dans le fichier CMakeLists.txt (RESOURCES)
                     //source: "images/car-cropped.svg"
@@ -275,14 +274,8 @@ Window {
                         onClicked: {
                             // les boutons personnalisés prennent la valeur de la voiture cliquée
                             carOptionsColumn.current_car_id = modelData.id
-                            console.log("voiture "+modelData.id);
-                            if(messageText != "")
-                            {
-                                console.log("Dernier message recu: "+messageText);
-                            } else {
-                                console.log("Pas de message recu");
-                            }
-
+                            //console.log("voiture "+modelData.id);
+                            sumoInterface.showMessage(modelData.id);
                         }
 
                     }
@@ -584,7 +577,6 @@ Window {
             id: broadcastColumn
             spacing: speedOptions.height * 0.03
             anchors {
-                //right: parent.right + carOptionsColumn.width + 40
                 right: parent.left
                 top: parent.top
                 margins: 10
@@ -599,33 +591,12 @@ Window {
                     var texteSaisi = myTextField.text;
                     console.log("Texte saisi :", texteSaisi);
                     if (carOptionsColumn.current_car_id.toString() !== "") {
-                        sumoInterface.findCarsAffectedByFrequency(carOptionsColumn.current_car_id.toString());
+                        sumoInterface.findCarsAffectedByFrequency(carOptionsColumn.current_car_id.toString(), texteSaisi);
                         console.log("Recherche des voitures affectées par la fréquence de la voiture " + carOptionsColumn.current_car_id);
 
-                        // partie qui pose problème
-                        var vehicles = sumoInterface.getVehiclesInRange();
-                        console.log(vehicles);
-
-
-                        var keys = Object.keys(vehicles);
-                        console.log("Nombre d'éléments dans vehiclesInRange:", keys.length);
-
-                        var model = sumoInterface.vehiclePositions;
-
-                        for (var i = 0; i < keys.length; ++i) {
-                            var vehicleID = "veh"+keys[i]; // pour avoir le format des id des voitures qml
-                            console.log("Vehicle ID:", vehicleID);
-
-                            for (var i = 0; i < model.count; ++i) {
-                                if (model.get(i).id === vehicleID) {
-                                    // Vous avez trouvé la voiture avec l'ID spécifié
-                                    // Modifiez la propriété messageText ici
-                                    model.setProperty(i, "messageText", texteSaisi);
-                                }
-                            }
-
-                        }
-                        
+                        var vehicles = sumoInterface.stringArray;
+                        console.log("Contenu de stringArray :", vehicles);
+                        console.log("Nombre d'éléments dans vehiclesInRange:", vehicles.length);
                     } else {
                         console.log("Aucune voiture sélectionnée.");
                     }
@@ -640,7 +611,6 @@ Window {
         width: parent.width * 0.1
         height: parent.height * 0.55
         color: "transparent"
-        //border.color: "black"
         radius: 8
         anchors {
             right: parent.right

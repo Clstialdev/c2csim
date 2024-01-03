@@ -60,6 +60,42 @@ QColor SumoInterface::applyColor(const QString &idString)
     }
 }
 
+void SumoInterface::showMessage(const QString &targetId)
+{
+    bool foundCar = false;
+    for (const QVariant &vehicleVariant : vehiclePositions)
+    {
+        QVariantMap vehicleMap = vehicleVariant.toMap();
+        QString currentId = vehicleMap["id"].toString();
+
+        if (currentId == targetId)
+        {
+            // qDebug() << "vehicleMap['message']: " << vehicleMap["message"].toString() << "vehicleMap['id']: " << vehicleMap["id"].toString();
+            //  Vous avez trouvé le véhicule avec l'ID spécifié
+            qDebug() << "Dernier message enregistré: " << vehicleMap["message"].toString();
+            foundCar = true;
+        }
+    }
+    if (!foundCar)
+    {
+        // Si le véhicule avec l'ID spécifié n'est pas trouvé, retournez une chaîne vide
+        qDebug() << "Le véhicule avec l'ID" << targetId << "n'a pas été trouvé dans vehiclePositions.";
+    }
+}
+
+void SumoInterface::convertToArray()
+{
+    stringArray.clear();
+    // Parcourir vehiclesInRange et ajouter currentID au tableau de chaînes de caractères
+    for (const auto &id : vehiclesInRange.keys())
+    {
+        stringArray.append(id);
+        // qDebug() << "Nouvel ID ajouté:" << id << "Nombre d'éléments:" << stringArray.length();
+    }
+
+    emit vehiclesInRangeChanged();
+}
+
 /***
  * @return ancienne vitesse de la voiture
  * @def modifie la vitesse d'une voiture ou met à l'arrêt
@@ -292,10 +328,12 @@ QVariantList SumoInterface::getHexagonColors() const
 {
     return hexagonColors;
 }
-void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleID)
+void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleID, const QString message)
 {
     // Vider la liste des véhicules à portée au début
     vehiclesInRange.clear();
+
+    qDebug() << "referenceVehicleID: " << referenceVehicleID << "message: " << message;
 
     double signalStrengthCar = -1.0;
     double referenceLat = 0.0;
@@ -320,7 +358,7 @@ void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleI
         qDebug() << "Vehicule cliqué pas trouvé: " << referenceVehicleID;
         return;
     }
-
+    int index = 0;
     for (const QVariant &voitureVariant : vehiclePositions)
     {
         QVariantMap voitureMap = voitureVariant.toMap();
@@ -335,16 +373,20 @@ void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleI
 
             double signalStrength = calculateSignalStrength(distance, signalStrengthCar);
 
-            qDebug() << "ID véhicule cliqué: " << referenceVehicleID << " ID de l'autre: " << currentID << " et signal strength: " << signalStrength;
+            // qDebug() << "ID véhicule cliqué: " << referenceVehicleID << " ID de l'autre: " << currentID << " et signal strength: " << signalStrength;
 
             if (signalStrength >= 20.0)
             {
                 vehiclesInRange.insert(currentID, signalStrength);
+                voitureMap["message"] = message;
+                vehiclePositions[index] = voitureMap; // Mettez à jour directement dans la liste
+                // qDebug() << "voitureMap['message']: " << voitureMap["message"].toString() << "voitureMap['id']: " << voitureMap["id"].toString();
             }
         }
+        index++;
     }
-
-    emit vehiclesInRangeChanged();
+    convertToArray();
+    // emit vehiclesInRangeChanged();
 }
 
 void SumoInterface::updateVehiclePositions()
@@ -372,23 +414,22 @@ void SumoInterface::updateVehiclePositions()
         vehicle["longitude"] = result.lon;
         vehicle["rotation"] = heading;
         vehicle["strength"] = 20;
+        vehicle["message"] = "";
 
         QColor carColor = applyColor(QString::fromStdString(id)); // Convertit la couleur en QVariant et l'associe à la clé "color" dans le QVariantMap
         QVariant colorVariant = QVariant::fromValue(carColor);
         vehicle["color"] = colorVariant;
 
         newPositions.append(vehicle);
-
         /*
-        qDebug() << "Vehicle ID:" << QString::fromStdString(id)
-                 << "Color:" << carColor
-                 << "Color Variant:" << colorVariant;
+                qDebug() << "Vehicle ID:" << QString::fromStdString(id)
+                         << "Color:" << carColor
+                         << "Color Variant:" << colorVariant;
 
-        qDebug() << "Vehicle ID:" << QString::fromStdString(id)
-                 << "Latitude:" << result.lat
-                 << "Longitude:" << result.lon;
-
-                 */
+                qDebug() << "Vehicle ID:" << QString::fromStdString(id)
+                         << "Latitude:" << result.lat
+                         << "Longitude:" << result.lon;
+                         */
     }
     first_init = false;
 

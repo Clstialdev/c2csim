@@ -20,8 +20,10 @@ class SumoInterface : public QObject
     Q_PROPERTY(QVariantList vehiclePositions READ getVehiclePositions NOTIFY vehiclePositionsChanged)
     Q_PROPERTY(QVariantList hexagonColors READ getHexagonColors NOTIFY hexagonColorsChanged)
     Q_PROPERTY(QHash<QString, double> vehiclesInRange READ getVehiclesInRange NOTIFY vehiclesInRangeChanged)
+    Q_PROPERTY(QVariantList stringArray READ getStringArray NOTIFY vehiclesInRangeChanged)
 
 public:
+    QVariantList stringArray;
     explicit SumoInterface(QObject *parent = nullptr);
     ~SumoInterface();
 
@@ -42,8 +44,15 @@ public:
     Q_INVOKABLE void addHexagon(const QString &idHex, qreal xCenter, qreal yCenter);
     Q_INVOKABLE bool isPointInsideHexagon(qreal pointX, qreal pointY, qreal hexagonXCenter, qreal hexagonYCenter);
 
-    Q_INVOKABLE void findCarsAffectedByFrequency(const QString &referenceVehicleID);
-    Q_INVOKABLE QHash<QString, double> getVehiclesInRange() const { return vehiclesInRange; }
+    Q_INVOKABLE void findCarsAffectedByFrequency(const QString &referenceVehicleID, const QString message);
+    Q_INVOKABLE QHash<QString, double> getVehiclesInRange() const { return vehiclesInRange; };
+    Q_INVOKABLE void showMessage(const QString &targetId);
+
+    Q_INVOKABLE void convertToArray();
+    const QVariantList &getStringArray() const
+    {
+        return stringArray;
+    }
 
 public slots:
     Q_INVOKABLE void updateHexagonColor();
