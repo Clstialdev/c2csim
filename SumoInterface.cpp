@@ -11,6 +11,7 @@
 #include <QPainter>
 #include <QCoreApplication>
 #include <QIcon>
+#include <cmath>
 
 #include "geoconverter.h"
 
@@ -78,7 +79,8 @@ void SumoInterface::applyColorToSVG(const QString &id)
     QString colorString = carColor.name(); // Obtenir le nom de la couleur (par exemple, "#RRGGBB")
 
     // Charger le fichier SVG
-    QString originalFilePath = QCoreApplication::applicationDirPath() + "/images/car-cropped.svg";
+    // QString originalFilePath = "/home/crowdev/qtproj/sumotest/sumotest/images/car-cropped.svg";
+    QString originalFilePath = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/car-cropped.svg";
 
     QFile file(originalFilePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -95,7 +97,7 @@ void SumoInterface::applyColorToSVG(const QString &id)
     svgContent.replace("fill=\"#000000\"", "fill=\"" + colorString + "\"");
 
     // Générer un nom de fichier unique en utilisant l'ID de la voiture
-    QString uniqueFileName = QCoreApplication::applicationDirPath() + "/images/generated/car_modified_" + id + ".svg";
+    QString uniqueFileName = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/generated/car_modified_" + id + ".svg";
 
     // Sauvegarder le fichier SVG modifié avec un nom de fichier unique
     QFile modifiedFile(uniqueFileName);
@@ -118,54 +120,104 @@ double SumoInterface::recupVitesse(const QVariant &vehicleID)
     return traci.vehicle.getSpeed(idString.toStdString());
 }
 
+double SumoInterface::calculateSignalStrength(double distance, double signalStrengthAtOneMeter)
+{
+    if (distance == 0)
+        return std::numeric_limits<double>::max();
+    return signalStrengthAtOneMeter / (distance * distance);
+}
+
+// Function to convert degrees to radians
+constexpr double SumoInterface::degreesToRadians(double degrees)
+{
+    return degrees * M_PI / 180.0;
+}
+
+// Haversine formula to calculate the distance between two points on the Earth
+double SumoInterface::distanceBetweenPoints(double lat1, double lon1, double lat2, double lon2)
+{
+    constexpr double earthRadiusKm = 6371.0; // Earth's radius in kilometers
+
+    double lat1Rad = degreesToRadians(lat1);
+    double lat2Rad = degreesToRadians(lat2);
+    double deltaLat = degreesToRadians(lat2 - lat1);
+    double deltaLon = degreesToRadians(lon2 - lon1);
+
+    double a = sin(deltaLat / 2) * sin(deltaLat / 2) +
+               cos(lat1Rad) * cos(lat2Rad) *
+                   sin(deltaLon / 2) * sin(deltaLon / 2);
+    double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    return earthRadiusKm * c;
+}
+
 // regarde pour chaque hexagone si il y a une voiture dedans
 // si il y a une voiture dedans, on récupère la couleur de la voiture,
 // et on la met en argument du signal qu'on envoie au fichier main.qml
 
-// il faudrait sûrement essayer avec un seul hexagone (par exemple le premier)
-//  pour savoir s'il détecte bien les voitures, où si les coordonnées ne sont pas les bonnes
 void SumoInterface::updateHexagonColor()
 {
     QVariantList newHexagonColors;
+    QMap<QString, QString> carColors;
 
-    // Parcours de la liste des hexagones
+    double minAcceptableSignalStrength = 10.0; // Define the minimum acceptable signal strength
+
+    // Initialize all hexagons to transparent
     for (const QVariant &hexagonVariant : listHexagons)
     {
         QVariantMap hexagonMap = hexagonVariant.toMap();
-        QString hexagonId = hexagonMap["id"].toString();
-        qreal hexagonLatCenter = hexagonMap["latCenter"].toReal();
-        qreal hexagonLonCenter = hexagonMap["lonCenter"].toReal();
+        newHexagonColors.append(QVariantMap{{"id", hexagonMap["id"].toString()}, {"couleur", "transparent"}});
+    }
 
-        bool carInside = false;
-        QString colorName;
+    // Parcours de la liste des voitures
+    for (const QVariant &voitureVariant : vehiclePositions)
+    {
+        QVariantMap voitureMap = voitureVariant.toMap();
+        qreal voitureLat = voitureMap["latitude"].toReal();
+        qreal voitureLon = voitureMap["longitude"].toReal();
+        QVariant carColorVariant = voitureMap["color"];
+        QColor color = carColorVariant.value<QColor>();
+        QString colorName = color.name();
+        double signalStrengthAtOneMeter = voitureMap["strength"].toDouble();
+        // qDebug() << "id de la voiture :" << voitureMap["id"].toString();
 
-        // Parcours de la liste des voitures
-        for (const QVariant &voitureVariant : vehiclePositions)
+        // Check which hexagon this car is in
+        for (QVariant &hexagonVariant : listHexagons)
         {
-            QVariantMap voitureMap = voitureVariant.toMap();
-            qreal voitureLat = voitureMap["latitude"].toReal();
-            qreal voitureLon = voitureMap["longitude"].toReal();
+            QVariantMap hexagonMap = hexagonVariant.toMap();
+            qreal hexagonLatCenter = hexagonMap["latCenter"].toReal();
+            qreal hexagonLonCenter = hexagonMap["lonCenter"].toReal();
+            QString hexagonId = hexagonMap["id"].toString();
+            double hexagonStrength = hexagonMap["current_strength"].toDouble();
 
-            // Vérifie si la voiture est à l'intérieur de l'hexagone
-            if (isPointInsideHexagon(voitureLat, voitureLon, hexagonLatCenter, hexagonLonCenter))
+            double distance = distanceBetweenPoints(voitureLat, voitureLon, hexagonLatCenter, hexagonLonCenter);
+
+            double signalStrength = calculateSignalStrength(distance, signalStrengthAtOneMeter);
+
+            qDebug() << "ID véhicule: " << voitureMap["id"].toString() << " ID de l'hexagone: " << hexagonId << " et signal strength: " << signalStrength;
+
+            // Comparison to the current signal
+            // qDebug() << signalStrength << " >= " << hexagonStrength << "?";
+            if ((signalStrength >= hexagonStrength) || (hexagonMap["current_car"] == voitureMap["id"].toString()))
             {
-                carInside = true;
-                QVariant carColorVariant = voitureMap["color"];
-                QColor color = carColorVariant.value<QColor>();
-                colorName = color.name();
-                break;
+                hexagonMap["current_car"] = voitureMap["id"].toString(); // on retient la voiture qui impose sa fréquence
+                hexagonMap["current_strength"] = signalStrength;
+                hexagonVariant = hexagonMap; // Update the value in the list
+                // Update the color of the hexagon with the color of the car
+                carColors[hexagonId] = colorName;
             }
         }
+    }
 
-        if (carInside)
+    // Now update the hexagon colors based on the cars
+    for (int i = 0; i < newHexagonColors.size(); ++i)
+    {
+        QVariantMap hexColorVariantMap = newHexagonColors[i].toMap();
+        QString hexagonId = hexColorVariantMap["id"].toString();
+        if (carColors.contains(hexagonId))
         {
-            //  Met à jour la couleur de l'hexagone avec la couleur de la voiture
-            newHexagonColors.append(QVariantMap{{"id", hexagonId}, {"couleur", colorName}});
-        }
-        else
-        {
-            // Met à jour la couleur de l'hexagone à transparent
-            newHexagonColors.append(QVariantMap{{"id", hexagonId}, {"couleur", "transparent"}});
+            hexColorVariantMap["couleur"] = carColors[hexagonId];
+            newHexagonColors[i] = hexColorVariantMap;
         }
     }
 
@@ -183,7 +235,8 @@ bool SumoInterface::isPointInsideHexagon(qreal pointLat, qreal pointLon, qreal h
 
     // Calculate the vertices of the hexagon
     QList<QPointF> hexagonVertices;
-    for (int i = 0; i < 6; ++i) {
+    for (int i = 0; i < 6; ++i)
+    {
         qreal angle = 60 * i - 30;
         qreal x = hexagonLatCenter + radius * qCos(qDegreesToRadians(angle));
         qreal y = hexagonLonCenter + radius * qSin(qDegreesToRadians(angle));
@@ -193,9 +246,11 @@ bool SumoInterface::isPointInsideHexagon(qreal pointLat, qreal pointLon, qreal h
     // Use the ray casting algorithm to determine if the point is inside the hexagon
     int i, j, nvert = hexagonVertices.size();
     bool inside = false;
-    for (i = 0, j = nvert - 1; i < nvert; j = i++) {
+    for (i = 0, j = nvert - 1; i < nvert; j = i++)
+    {
         if (((hexagonVertices[i].y() > pointLon) != (hexagonVertices[j].y() > pointLon)) &&
-            (pointLat < (hexagonVertices[j].x() - hexagonVertices[i].x()) * (pointLon - hexagonVertices[i].y()) / (hexagonVertices[j].y() - hexagonVertices[i].y()) + hexagonVertices[i].x())) {
+            (pointLat < (hexagonVertices[j].x() - hexagonVertices[i].x()) * (pointLon - hexagonVertices[i].y()) / (hexagonVertices[j].y() - hexagonVertices[i].y()) + hexagonVertices[i].x()))
+        {
             inside = !inside;
         }
     }
@@ -214,6 +269,8 @@ void SumoInterface::addHexagon(const QString &idHex, qreal xCenter, qreal yCente
 
     hexagonMap["latCenter"] = xCenter;
     hexagonMap["lonCenter"] = yCenter;
+    hexagonMap["current_strength"] = 8;
+    hexagonMap["current_car"] = "";
 
     /* tentative sans lambert
     hexagonMap["latCenter"] = result.lat;
@@ -233,6 +290,58 @@ QVariantList SumoInterface::getVehiclePositions() const
 QVariantList SumoInterface::getHexagonColors() const
 {
     return hexagonColors;
+}
+void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleID)
+{
+    // Vider la liste des véhicules à portée au début
+    vehiclesInRange.clear();
+
+    double signalStrengthCar = -1.0;
+    double referenceLat = 0.0;
+    double referenceLon = 0.0;
+
+    for (const QVariant &carVariant : vehiclePositions)
+    {
+        QVariantMap carMap = carVariant.toMap();
+        QString currentId = carMap["id"].toString();
+
+        if (currentId == referenceVehicleID)
+        {
+            signalStrengthCar = carMap["strength"].toDouble();
+            referenceLat = carMap["latitude"].toDouble();
+            referenceLon = carMap["longitude"].toDouble();
+            break; // Sortir de la boucle dès que l'ID est trouvé
+        }
+    }
+
+    if (signalStrengthCar == -1.0)
+    {
+        qDebug() << "Vehicule cliqué pas trouvé: " << referenceVehicleID;
+        return;
+    }
+
+    for (const QVariant &voitureVariant : vehiclePositions)
+    {
+        QVariantMap voitureMap = voitureVariant.toMap();
+        QString currentID = voitureMap["id"].toString();
+
+        if (currentID != referenceVehicleID)
+        {
+            qreal voitureLat = voitureMap["latitude"].toReal();
+            qreal voitureLon = voitureMap["longitude"].toReal();
+
+            double distance = distanceBetweenPoints(referenceLat, referenceLon, voitureLat, voitureLon);
+
+            double signalStrength = calculateSignalStrength(distance, signalStrengthCar);
+
+            qDebug() << "ID véhicule cliqué: " << referenceVehicleID << " ID de l'autre: " << currentID << " et signal strength: " << signalStrength;
+
+            if (signalStrength >= 20.0)
+            {
+                vehiclesInRange.insert(currentID, signalStrength);
+            }
+        }
+    }
 }
 
 void SumoInterface::updateVehiclePositions()
@@ -259,6 +368,7 @@ void SumoInterface::updateVehiclePositions()
         vehicle["latitude"] = result.lat;
         vehicle["longitude"] = result.lon;
         vehicle["rotation"] = heading;
+        vehicle["strength"] = 20;
 
         QColor carColor = applyColor(QString::fromStdString(id)); // Convertit la couleur en QVariant et l'associe à la clé "color" dans le QVariantMap
         QVariant colorVariant = QVariant::fromValue(carColor);

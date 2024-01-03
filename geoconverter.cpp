@@ -55,7 +55,7 @@ GeoCoordinates GeoConverter::convertGeo(double x, double y)
     // c and f are the lat and long of the origin
     double c = p1.lat;
     double f = p1.lon;
-    qDebug() << a << "," << b << "," << d << "," << e;
+    // qDebug() << a << "," << b << "," << d << "," << e;
 
     // Calculating lat and long for the given x and y
     // double lat = a * x + b * y + c;
@@ -64,7 +64,7 @@ GeoCoordinates GeoConverter::convertGeo(double x, double y)
     double lat = qRound((a * x + b * y + c) * 1000000) / 1000000.0;
     double lon = qRound((d * x + e * y + f) * 1000000) / 1000000.0;
 
-    qDebug() << "Coordonnées Lambert hexagone:" << lat << "," << lon << " à partir de " << x << "," << y;
+    // qDebug() << "Coordonnées Lambert hexagone:" << lat << "," << lon << " à partir de " << x << "," << y;
 
     return {lat, lon};
 }

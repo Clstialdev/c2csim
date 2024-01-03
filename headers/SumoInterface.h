@@ -26,15 +26,22 @@ public:
     Q_INVOKABLE void startSimulation();
     Q_INVOKABLE void stopSimulation();
     QVariantList getVehiclePositions() const;
-    QVariantList getHexagonColors() const;
-    Q_INVOKABLE void changeSpeedCar(const QVariant &vehicleID, double speed);
-    Q_INVOKABLE double recupVitesse(const QVariant &vehicleID);
-    Q_INVOKABLE QColor applyColor(const QString &idString);
-    Q_INVOKABLE void applyColorToSVG(const QString &id);
     Q_INVOKABLE void updateVehiclePositions();
 
+    Q_INVOKABLE void changeSpeedCar(const QVariant &vehicleID, double speed);
+    Q_INVOKABLE double recupVitesse(const QVariant &vehicleID);
+    double calculateSignalStrength(double distance, double signalStrengthAtOneMeter);
+    double distanceBetweenPoints(double lat1, double lon1, double lat2, double lon2);
+    constexpr double degreesToRadians(double degrees);
+
+    QVariantList getHexagonColors() const;
+    Q_INVOKABLE QColor applyColor(const QString &idString);
+    Q_INVOKABLE void applyColorToSVG(const QString &id);
     Q_INVOKABLE void addHexagon(const QString &idHex, qreal xCenter, qreal yCenter);
     Q_INVOKABLE bool isPointInsideHexagon(qreal pointX, qreal pointY, qreal hexagonXCenter, qreal hexagonYCenter);
+
+    Q_INVOKABLE void findCarsAffectedByFrequency(const QString &referenceVehicleID);
+    Q_INVOKABLE QHash<QString, double> getVehiclesInRange() const { return vehiclesInRange; }
 
 public slots:
     Q_INVOKABLE void updateHexagonColor();
@@ -51,6 +58,7 @@ private:
     QVariantList listHexagons;
     QVariantList hexagonColors;
     QHash<QString, QColor> vehicleColors;
+    QHash<QString, double> vehiclesInRange;
 };
 
 #endif // SUMOINTERFACE_H

@@ -245,7 +245,7 @@ Window {
 
                     property string messageText: ""  // message diffusé aux véhicules à proximité
 
-                    // pour changer l'image, aussi rajouter l'image dans le CMakeLists.txt (RESOURCES)
+                    // pour changer l'image, aussi rajouter l'image dans le fichier CMakeLists.txt (RESOURCES)
                     //source: "images/car-cropped.svg"
                     Component.onCompleted: {
                         //console.log("Type de modelData.id :", typeof modelData.id);
@@ -280,7 +280,7 @@ Window {
                         onClicked: {
                             // les boutons personnalisés prennent la valeur de la voiture cliquée
                             carOptionsColumn.current_car_id = modelData.id
-                            console.log("-------------------");
+                            console.log("--------clic sur voiture-----------");
 
                         }
 
@@ -313,25 +313,10 @@ Window {
                 property real centerY: 7.3400 - 0.043 + row * d
 
 
-                /*
-                /// DEBUG ///
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("Hexagon ID:", parent.hexagonId);
-                        console.log("hexTestColor:", parent.hexTestColor);
-                        console.log("color:", parent.color);
-                    }
-                }
-                */
-
-
-
                 Component.onCompleted: {
                     sumoInterface.addHexagon(modelData.toString(),centerX,centerY);
-                    //console.log("voilà le modelData des HEXAGONES: "+modelData.toString());
+                    console.log("voilà le modelData des HEXAGONES: "+modelData.toString());
                 }
-                // Utilisation d'un Text pour afficher le texte de débogage au-dessus de l'hexagone
                 
                 // partie finale du processus de changement de couleur, appelé par
                 //la fonction onUpdateHexagonColor un peu plus haut dans le code
@@ -459,7 +444,7 @@ Window {
         width: parent.width * 0.1
         height: parent.height * 0.45
         color: "transparent"
-        //border.color: "red"
+        border.color: "red"
         radius: 8
         visible: false
         anchors {
@@ -493,8 +478,13 @@ Window {
                     }
                 }
                 onClicked: {
-                    sumoInterface.changeSpeedCar(carOptionsColumn.current_car_id.toString(), 1.0); //-1 réinitialise la vitesse par Sumo
-                    console.log("ralentissement de la voiture "+carOptionsColumn.current_car_id);
+                    if(carOptionsColumn.current_car_id.toString() != ""){
+                        sumoInterface.changeSpeedCar(carOptionsColumn.current_car_id.toString(), 1.0); //-1 réinitialise la vitesse par Sumo
+                        console.log("ralentissement de la voiture "+carOptionsColumn.current_car_id);
+                    } else {
+                        console.log("Aucune voiture sélectionnée.");
+                        // Ajoutez d'autres actions si nécessaire
+                    }
                 }
             }
 
@@ -517,8 +507,13 @@ Window {
                     }
                 }
                 onClicked: {
-                    sumoInterface.changeSpeedCar(carOptionsColumn.current_car_id.toString(), 0.0);
-                    console.log("arrêt de la voiture "+carOptionsColumn.current_car_id);
+                    if(carOptionsColumn.current_car_id.toString() != ""){
+                        sumoInterface.changeSpeedCar(carOptionsColumn.current_car_id.toString(), 0.0); //-1 réinitialise la vitesse par Sumo
+                        console.log("arrêt de la voiture "+carOptionsColumn.current_car_id);
+                    } else {
+                        console.log("Aucune voiture sélectionnée.");
+                        // Ajoutez d'autres actions si nécessaire
+                    }
                 }
             }
 
@@ -542,9 +537,15 @@ Window {
                     }
                 }
                 onClicked: {
-                    sumoInterface.changeSpeedCar(carOptionsColumn.current_car_id.toString(), -1); //-1 réinitialise la vitesse par Sumo
-                    console.log("redémarrage de la voiture "+carOptionsColumn.current_car_id);
+                    if(carOptionsColumn.current_car_id.toString() != ""){
+                        sumoInterface.changeSpeedCar(carOptionsColumn.current_car_id.toString(), -1); //-1 réinitialise la vitesse par Sumo
+                        console.log("redémarrage de la voiture "+carOptionsColumn.current_car_id);
+                    } else {
+                        console.log("Aucune voiture sélectionnée.");
+                        // Ajoutez d'autres actions si nécessaire
+                    }
                 }
+                
             }
             // >> Button pour la voiture
             Button {
@@ -565,11 +566,63 @@ Window {
                     }
                 }
                 onClicked: {
-                    sumoInterface.changeSpeedCar(carOptionsColumn.current_car_id.toString(), 30.0); //-1 réinitialise la vitesse par Sumo
-                    console.log("accélération de la voiture "+carOptionsColumn.current_car_id);
+                    if(carOptionsColumn.current_car_id.toString() != ""){
+                        sumoInterface.changeSpeedCar(carOptionsColumn.current_car_id.toString(), 30.0); //-1 réinitialise la vitesse par Sumo
+                        console.log("accélération de la voiture "+carOptionsColumn.current_car_id);
+                    } else {
+                        console.log("Aucune voiture sélectionnée.");
+                        // Ajoutez d'autres actions si nécessaire
+                    }
                 }
+                
             }
         }
+        Column {
+            id: broadcastColumn
+            spacing: speedOptions.height * 0.04
+            anchors.centerIn: parent
+
+            Button {
+                width: speedOptions.width * 0.55
+                height: speedOptions.height * 0.15
+                background: Rectangle {
+                    color: "black"
+                    border.color: "#26282a"
+                    border.width: 1
+                    radius: 4
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "M" // Utilisez le symbole approprié pour la fonction que vous souhaitez
+                        font.family: fontAwesomeLoaded ? fontAwesome.name : "FontAwesome"
+                        font.pixelSize: mainWindow.symbolSize
+                        color:"#A1DC30"
+                    }
+                }
+                onClicked: {
+                    if (carOptionsColumn.current_car_id.toString() !== "") {
+                        sumoInterface.findCarsAffectedByFrequency(carOptionsColumn.current_car_id.toString());
+                        console.log("Recherche des voitures affectées par la fréquence de la voiture " + carOptionsColumn.current_car_id);
+                        console.log(vehiclesInRange);
+
+                        var vehiclesInRange = sumoInterface.getVehiclesInRange();
+                        var keys = Object.keys(vehiclesInRange);
+
+                        console.log("Nombre d'éléments dans vehiclesInRange:", keys.length);
+
+                        for (var i = 0; i < keys.length; ++i) {
+                            var vehicleID = keys[i];
+                            console.log("Vehicle ID:", vehicleID);
+                            console.log("hhh");
+                        }
+                    } else {
+                        console.log("Aucune voiture sélectionnée.");
+                    }
+                }
+
+            }
+        }
+
     }
 
     Rectangle {
