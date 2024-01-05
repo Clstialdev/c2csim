@@ -274,7 +274,6 @@ Window {
                         onClicked: {
                             // les boutons personnalisés prennent la valeur de la voiture cliquée
                             carOptionsColumn.current_car_id = modelData.id
-                            //console.log("voiture "+modelData.id);
                             sumoInterface.showMessage(modelData.id);
                         }
 
@@ -342,7 +341,7 @@ Window {
             model: 312 // Utilisez la taille de hexagonColors comme modèle
             delegate: hexagonComponent
             Component.onCompleted: {
-                console.log("hexagonRepeater is loaded, count:", count)
+                //console.log("hexagonRepeater is loaded, count:", count)
             }
 
             onModelChanged: {
@@ -589,14 +588,13 @@ Window {
                 placeholderText: "Saisissez votre message"
                 onAccepted: {
                     var texteSaisi = myTextField.text;
-                    console.log("Texte saisi :", texteSaisi);
                     if (carOptionsColumn.current_car_id.toString() !== "") {
                         sumoInterface.findCarsAffectedByFrequency(carOptionsColumn.current_car_id.toString(), texteSaisi);
                         console.log("Recherche des voitures affectées par la fréquence de la voiture " + carOptionsColumn.current_car_id);
 
                         var vehicles = sumoInterface.stringArray;
-                        console.log("Contenu de stringArray :", vehicles);
-                        console.log("Nombre d'éléments dans vehiclesInRange:", vehicles.length);
+                        console.log("Véhicules à proximité:", vehicles);
+                        
                     } else {
                         console.log("Aucune voiture sélectionnée.");
                     }

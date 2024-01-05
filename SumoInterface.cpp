@@ -70,9 +70,8 @@ void SumoInterface::showMessage(const QString &targetId)
 
         if (currentId == targetId)
         {
-            // qDebug() << "vehicleMap['message']: " << vehicleMap["message"].toString() << "vehicleMap['id']: " << vehicleMap["id"].toString();
             //  Vous avez trouvé le véhicule avec l'ID spécifié
-            qDebug() << "Dernier message enregistré: " << vehicleMap["message"].toString();
+            qDebug() << "Dernier message enregistré: " << vehicleMap["message"].toString() << "par la voiture " << vehicleMap["id"].toString();
             foundCar = true;
         }
     }
@@ -333,7 +332,7 @@ void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleI
     // Vider la liste des véhicules à portée au début
     vehiclesInRange.clear();
 
-    qDebug() << "referenceVehicleID: " << referenceVehicleID << "message: " << message;
+    qDebug() << referenceVehicleID << "envoie: " << message;
 
     double signalStrengthCar = -1.0;
     double referenceLat = 0.0;
