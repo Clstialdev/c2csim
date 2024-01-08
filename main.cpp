@@ -59,34 +59,6 @@ GeoCoordinates convertGeo(double x, double y)
 int main(int argc, char *argv[])
 {
 
-    //    // Create an instance of the TraCIAPI class
-    //    TraCIAPI traci;
-
-    //    // Use the methods provided by the TraCIAPI class to interact with SUMO
-    //    traci.connect("localhost", 6066);
-    //    // Step into the simulation
-    //    // Step into the simulation
-    //    while (true) {
-    //        // Get the IDs of all the vehicles
-    //        vector<string> vehicleIds = traci.vehicle.getIDList();
-
-    //        // Print the IDs, X and Y positions of all the vehicles
-    //        for (const string& id : vehicleIds) {
-    //            double x = traci.vehicle.getPosition(id).x;
-    //            double y = traci.vehicle.getPosition(id).y;
-    //            double latitude, longitude;
-    //            GeoCoordinates result = convertGeo(x, y);
-    //            latitude = result.lat;
-    //            longitude = result.lon;
-    //            // Convert Cartesian coordinates to latitude and longitude
-    //            cout << "Vehicle ID: " << id << ", X: " << latitude << ", Y: " << longitude << endl;
-    //        }
-
-    //        // Step the simulation forward
-    //        traci.simulationStep();
-
-    //    }
-
     QGuiApplication app(argc, argv);
     qmlRegisterType<SumoInterface>("Sumo", 1, 0, "SumoInterface"); ///
     QQmlApplicationEngine engine;
