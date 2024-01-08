@@ -15,8 +15,6 @@
 
 #include "geoconverter.h"
 
-bool first_init = true;
-
 SumoInterface::SumoInterface(QObject *parent) : QObject(parent)
 {
     qRegisterMetaType<QString>("QString");
@@ -70,14 +68,12 @@ void SumoInterface::showMessage(const QString &targetId)
 
         if (currentId == targetId)
         {
-            //  Vous avez trouvé le véhicule avec l'ID spécifié
-            qDebug() << "Dernier message enregistré: " << vehicleMap["message"].toString() << "par la voiture " << vehicleMap["id"].toString();
+            qDebug() << "Dernier message enregistré par la voiture " << vehicleMap["id"].toString() << ": " << vehicleMap["message"].toString();
             foundCar = true;
         }
     }
     if (!foundCar)
     {
-        // Si le véhicule avec l'ID spécifié n'est pas trouvé, retournez une chaîne vide
         qDebug() << "Le véhicule avec l'ID" << targetId << "n'a pas été trouvé dans vehiclePositions.";
     }
 }
@@ -89,7 +85,6 @@ void SumoInterface::convertToArray()
     for (const auto &id : vehiclesInRange.keys())
     {
         stringArray.append(id);
-        // qDebug() << "Nouvel ID ajouté:" << id << "Nombre d'éléments:" << stringArray.length();
     }
 
     emit vehiclesInRangeChanged();
@@ -113,10 +108,12 @@ void SumoInterface::applyColorToSVG(const QString &id)
     QColor carColor = applyColor(id);
     QString colorString = carColor.name(); // Obtenir le nom de la couleur (par exemple, "#RRGGBB")
 
-    // Charger le fichier SVG
-    // QString originalFilePath = "/home/crowdev/qtproj/sumotest/sumotest/images/car-cropped.svg";
+    /*
+    Charger le fichier SVG
+    Si la ligne de chemin ne fonctionne pas, utiliser un chemin absolu comme ceci:
     QString originalFilePath = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/car-cropped.svg";
-    // QString originalFilePath = QCoreApplication::applicationDirPath() + "/images/car-cropped.svg";
+    */
+    QString originalFilePath = QCoreApplication::applicationDirPath() + "/images/car-cropped.svg";
 
     QFile file(originalFilePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -132,9 +129,12 @@ void SumoInterface::applyColorToSVG(const QString &id)
     // Modifier la couleur dans le fichier SVG
     svgContent.replace("fill=\"#000000\"", "fill=\"" + colorString + "\"");
 
-    // Générer un nom de fichier unique en utilisant l'ID de la voiture
+    /*
+    Charger le fichier SVG
+    Si la ligne de chemin ne fonctionne pas, utiliser un chemin absolu comme ceci:
     QString uniqueFileName = "/home/elias/TP_PROG/M1IM/Reseaux/c2csim/images/generated/car_modified_" + id + ".svg";
-    // QString uniqueFileName = QCoreApplication::applicationDirPath() + "/images/generated/car_modified_" + id + ".svg";
+    */
+    QString uniqueFileName = QCoreApplication::applicationDirPath() + "/images/generated/car_modified_" + id + ".svg";
     //  Sauvegarder le fichier SVG modifié avec un nom de fichier unique
     QFile modifiedFile(uniqueFileName);
     if (!modifiedFile.open(QIODevice::WriteOnly | QIODevice::Text))
@@ -151,7 +151,6 @@ void SumoInterface::applyColorToSVG(const QString &id)
 double SumoInterface::recupVitesse(const QVariant &vehicleID)
 {
     QString idString = vehicleID.toString();
-    // qDebug() << "Current Speed:" << traci.vehicle.getSpeed(idString.toStdString());
 
     return traci.vehicle.getSpeed(idString.toStdString());
 }
@@ -190,7 +189,6 @@ double SumoInterface::distanceBetweenPoints(double lat1, double lon1, double lat
 // regarde pour chaque hexagone si il y a une voiture dedans
 // si il y a une voiture dedans, on récupère la couleur de la voiture,
 // et on la met en argument du signal qu'on envoie au fichier main.qml
-
 void SumoInterface::updateHexagonColor()
 {
     QVariantList newHexagonColors;
@@ -215,7 +213,6 @@ void SumoInterface::updateHexagonColor()
         QColor color = carColorVariant.value<QColor>();
         QString colorName = color.name();
         double signalStrengthAtOneMeter = voitureMap["strength"].toDouble();
-        // qDebug() << "id de la voiture :" << voitureMap["id"].toString();
 
         // Check which hexagon this car is in
         for (QVariant &hexagonVariant : listHexagons)
@@ -233,7 +230,6 @@ void SumoInterface::updateHexagonColor()
             // qDebug() << "ID véhicule: " << voitureMap["id"].toString() << " ID de l'hexagone: " << hexagonId << " et signal strength: " << signalStrength;
 
             // Comparison to the current signal
-            // qDebug() << signalStrength << " >= " << hexagonStrength << "?";
             if ((signalStrength >= hexagonStrength) || (hexagonMap["current_car"] == voitureMap["id"].toString()))
             {
                 hexagonMap["current_car"] = voitureMap["id"].toString(); // on retient la voiture qui impose sa fréquence
@@ -298,7 +294,6 @@ bool SumoInterface::isPointInsideHexagon(qreal pointLat, qreal pointLon, qreal h
 // pour pouvoir les utiliser dans ce fichier plus facilement
 void SumoInterface::addHexagon(const QString &idHex, qreal xCenter, qreal yCenter)
 {
-    // GeoCoordinates result = GeoConverter::convertGeo(xCenter, yCenter);
 
     QVariantMap hexagonMap;
     hexagonMap["id"] = idHex;
@@ -308,14 +303,7 @@ void SumoInterface::addHexagon(const QString &idHex, qreal xCenter, qreal yCente
     hexagonMap["current_strength"] = 8;
     hexagonMap["current_car"] = "";
 
-    /* tentative sans lambert
-    hexagonMap["latCenter"] = result.lat;
-    hexagonMap["lonCenter"] = result.lon;
-    */
     listHexagons.append(hexagonMap);
-
-    // qDebug() << "Adding hexagon with ID:" << idHex << "at (" << xCenter << "," << yCenter << ")";
-    // qDebug() << "Adding hexagonLambert with ID:" << idHex << "at (" << hexagonMap["latCenter"] << "," << hexagonMap["lonCenter"] << ")";
 }
 
 QVariantList SumoInterface::getVehiclePositions() const
@@ -327,6 +315,7 @@ QVariantList SumoInterface::getHexagonColors() const
 {
     return hexagonColors;
 }
+
 void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleID, const QString message)
 {
     // Vider la liste des véhicules à portée au début
@@ -369,23 +358,18 @@ void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleI
             qreal voitureLon = voitureMap["longitude"].toReal();
 
             double distance = distanceBetweenPoints(referenceLat, referenceLon, voitureLat, voitureLon);
-
             double signalStrength = calculateSignalStrength(distance, signalStrengthCar);
-
-            // qDebug() << "ID véhicule cliqué: " << referenceVehicleID << " ID de l'autre: " << currentID << " et signal strength: " << signalStrength;
 
             if (signalStrength >= 20.0)
             {
                 vehiclesInRange.insert(currentID, signalStrength);
                 voitureMap["message"] = message;
                 vehiclePositions[index] = voitureMap; // Mettez à jour directement dans la liste
-                // qDebug() << "voitureMap['message']: " << voitureMap["message"].toString() << "voitureMap['id']: " << voitureMap["id"].toString();
             }
         }
         index++;
     }
     convertToArray();
-    // emit vehiclesInRangeChanged();
 }
 
 void SumoInterface::updateVehiclePositions()
@@ -393,7 +377,6 @@ void SumoInterface::updateVehiclePositions()
     QVariantList newPositions;
 
     // Step the simulation forward
-    // qDebug() << "Stepping the simulation";
     traci.simulationStep();
     // qDebug() << "Simulation stepped";
 
@@ -420,17 +403,7 @@ void SumoInterface::updateVehiclePositions()
         vehicle["color"] = colorVariant;
 
         newPositions.append(vehicle);
-        /*
-                qDebug() << "Vehicle ID:" << QString::fromStdString(id)
-                         << "Color:" << carColor
-                         << "Color Variant:" << colorVariant;
-
-                qDebug() << "Vehicle ID:" << QString::fromStdString(id)
-                         << "Latitude:" << result.lat
-                         << "Longitude:" << result.lon;
-                         */
     }
-    first_init = false;
 
     // Check if the positions have changed
     if (newPositions != vehiclePositions)

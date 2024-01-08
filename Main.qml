@@ -133,11 +133,10 @@ Window {
         for (var i = 0; i < hexagonRepeater.count; ++i) {
             var hexagonItem = hexagonRepeater.itemAt(i);
             if (hexagonItem.hexagonId == hexId) {
-                //console.log(hexagonItem.hexagonId+" =? "+hexId+ ":",hexagonItem !== null);
                 return hexagonItem;
             }
         }
-        return null; // Ajustez ceci en fonction de votre logique de récupération réelle
+        return null;
     }
     function updateHexagonDisplay(hexagonColors) {
         // Met à jour la couleur de l'hexagone dans votre QML
@@ -146,7 +145,6 @@ Window {
             var hexagonId = hexagonInfo["id"];
             var colorName = hexagonInfo["couleur"];
 
-            //  console.log("QML: Hexagone " + hexagonId + " , nouvelle couleur: " + colorName);
 
             var newHexagonItem = getHexagonItemById(hexagonId);
             if (newHexagonItem !== null) {
@@ -173,8 +171,6 @@ Window {
     }
 
     
-
-
     Plugin {
         id: itemsOverlayPlugin
         name: "itemsoverlay"
@@ -188,25 +184,6 @@ Window {
         zoomLevel: map.zoomLevel
         color: "transparent"
 
-        // Model for car positions
-        //                 ListModel {
-        //                     id: carModel
-        //                     ListElement { vehid: "veh0"; latitude: 47.750839; longitude: 7.335888 }
-        //                     ListElement { vehid: "veh1"; latitude: 47.750839; longitude: 7.335888 }
-
-        //                     function updateVehiclePosition(vehicleId, latitude, longitude) {
-        ////                            console.log("im in function", vehicleId);
-        //                             let numericPart = vehicleId.match(/\d+/);
-        //                             let i = numericPart[0] ?? 0;
-        //                             if(i > 100){ return}
-        //                                 let item = get(i);
-        ////                                 console.log(item.vehid, "is being looked at");
-        //                                     setProperty(i, "latitude", latitude);
-        //                                     setProperty(i, "longitude", longitude);
-        //                                     console.log(vehicleId, " was updated");
-        //                                     return;
-        //                         }
-        //                 }
         MapItemView {
             id:mapItemView
             model: sumoInterface.vehiclePositions
@@ -217,23 +194,8 @@ Window {
                 anchorPoint.x: image.width / 2
                 anchorPoint.y: image.height / 1000
 
-
-                Component.onCompleted: {
-                    //console.log("Vehicle added:", modelData.latitude, modelData.longitude, modelData.id)
-                }
-
                 onCoordinateChanged: {
-                    //console.log("Vehicle moved:", coordinate.latitude, coordinate.longitude)
                     image.rotation = modelData.rotation + 90
-                    //                    if ((modelData.rotation > 45 && modelData.rotation < 130)
-                    //                            || (modelData.rotation > -45
-                    //                                && modelData.rotation < -130)) {
-                    //                        // Modify the 'y' property of the 'translate' element
-                    //                        translate.y = "-10px" // Change this value as needed
-                    //                    } else {
-                    //                        // Reset the 'y' property of the 'translate' element
-                    //                        translate.y = 0 // Reset to the original value
-                    //                    }
                 }
 
                 sourceItem: Image {
@@ -242,9 +204,6 @@ Window {
                     // pour changer l'image, aussi rajouter l'image dans le fichier CMakeLists.txt (RESOURCES)
                     //source: "images/car-cropped.svg"
                     Component.onCompleted: {
-                        //console.log("modelData.id :", modelData.id);
-                        //console.log("Type de modelData.color :", typeof modelData.color);
-                        //console.log("modelData.color :", modelData.color);
 
                         // Appeler la fonction pour appliquer la couleur dès le chargement de la voiture
                         //SumoInterface.applyColorToSVG(modelData.id, modelData.color.toString());
@@ -341,11 +300,10 @@ Window {
             model: 312 // Utilisez la taille de hexagonColors comme modèle
             delegate: hexagonComponent
             Component.onCompleted: {
-                //console.log("hexagonRepeater is loaded, count:", count)
             }
 
             onModelChanged: {
-                // Mettez à jour la taille du modèle lorsqu'elle change
+                // Mets à jour la taille du modèle lorsqu'elle change
                 model = sumoInterface.hexagonColors.length;
             }
         }
@@ -478,7 +436,6 @@ Window {
                         console.log("ralentissement de la voiture "+carOptionsColumn.current_car_id);
                     } else {
                         console.log("Aucune voiture sélectionnée.");
-                        // Ajoutez d'autres actions si nécessaire
                     }
                 }
             }
@@ -507,7 +464,6 @@ Window {
                         console.log("arrêt de la voiture "+carOptionsColumn.current_car_id);
                     } else {
                         console.log("Aucune voiture sélectionnée.");
-                        // Ajoutez d'autres actions si nécessaire
                     }
                 }
             }
@@ -537,7 +493,6 @@ Window {
                         console.log("redémarrage de la voiture "+carOptionsColumn.current_car_id);
                     } else {
                         console.log("Aucune voiture sélectionnée.");
-                        // Ajoutez d'autres actions si nécessaire
                     }
                 }
                 
@@ -690,13 +645,11 @@ Window {
                     if (playButtonText.text === "\uf04b")
                     {
                         playButtonText.text = "\uf04c";
-                        // Add logic for when playback is paused
                         mainWindow.timerInterval = 300;
                         mainWindow.coeffVitesse = 1
                     }
                     else {
                         playButtonText.text = "\uf04b";
-                        // Add logic for when playback resumes
                         mainWindow.timerInterval = 100000;
                         mainWindow.coeffVitesse = 0
                     }
@@ -773,23 +726,4 @@ Window {
             color:"#A1DC30"
         }
     }
-
-    /* // Position Display
-                                                                        Rectangle {
-                                                                            width: 0.75 * parent.width
-                                                                            height: 50
-                                                                            color: "lightgray"
-                                                                            opacity: 0.7
-
-                                                                            anchors {
-                                                                                top: parent.top
-                                                                                left: parent.left
-                                                                            }
-
-                                                                            Label {
-                                                                                text: "Latitude: " + map.center.latitude + ", Longitude: " + map.center.longitude
-                                                                                anchors.centerIn: parent
-                                                                            }
-                                                                        }
-                                                                        */
 }
