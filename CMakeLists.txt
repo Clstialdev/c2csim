@@ -68,7 +68,6 @@ add_custom_target(run
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-# Ajouter une cible "restart" qui dépend de "clean", "all" et "run"
 add_custom_target(restart
     COMMAND make clean
     COMMAND make

@@ -360,11 +360,11 @@ void SumoInterface::findCarsAffectedByFrequency(const QString &referenceVehicleI
             double distance = distanceBetweenPoints(referenceLat, referenceLon, voitureLat, voitureLon);
             double signalStrength = calculateSignalStrength(distance, signalStrengthCar);
 
-            if (signalStrength >= 20.0)
+            if (signalStrength >= 10.0)
             {
                 vehiclesInRange.insert(currentID, signalStrength);
                 voitureMap["message"] = message;
-                vehiclePositions[index] = voitureMap; // Mettez à jour directement dans la liste
+                vehiclePositions[index] = voitureMap;
             }
         }
         index++;

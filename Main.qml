@@ -292,7 +292,6 @@ Window {
                         Math.PI / 3 * 4), hexVertex(Math.PI / 3 * 5)]
             }
 
-
         }
 
         Repeater {
