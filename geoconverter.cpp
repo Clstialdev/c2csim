@@ -1,6 +1,8 @@
 #include "geoconverter.h"
+#include <QDebug>
 
-GeoCoordinates GeoConverter::convertGeo(double x, double y) {
+GeoCoordinates GeoConverter::convertGeo(double x, double y)
+{
     // Given points
     Point p1 = {0, 0, 47.734738, 7.308797};
     Point p2 = {5000, 3000, 47.762685, 7.374628};
@@ -17,9 +19,8 @@ GeoCoordinates GeoConverter::convertGeo(double x, double y) {
     double c = p1.lat;
     double f = p1.lon;
 
-    // Calculating lat and long for the given x and y
-    double lat = a * x + b * y + c;
-    double lon = d * x + e * y + f;
+    double lat = qRound((a * x + b * y + c) * 1000000) / 1000000.0;
+    double lon = qRound((d * x + e * y + f) * 1000000) / 1000000.0;
 
     return {lat, lon};
 }

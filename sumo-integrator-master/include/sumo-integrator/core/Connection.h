@@ -2,8 +2,8 @@
 #define INCLUDE_SUMOINTEGRATOR_CORE_CONNECTION_H
 
 
-#include "include/sumo-integrator/core/Concern.h"
-#include "include/sumo-integrator/core/Sumo.h"
+#include "Concern.h"
+#include "Sumo.h"
 
 #include <string>
 

@@ -2,7 +2,7 @@
 #define INCLUDE_SUMOINTEGRATOR_CORE_CONCERN_H
 
 
-#include "include/sumo-integrator/core/Sumo.h"
+#include "Sumo.h"
 
 
 namespace sumointegrator {

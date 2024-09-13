@@ -24,15 +24,15 @@
 // ===========================================================================
 // included modules
 // ===========================================================================
-#include <lib/sumo/config.h>
+#include "config.h"
 
-#include <vector>
 #include <limits>
 #include <map>
-#include <string>
-#include <stdexcept>
-#include <sstream>
 #include <memory>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 
 // ===========================================================================
@@ -41,40 +41,39 @@
 #define DEFAULT_VIEW "View #0"
 #define PRECISION 2
 
-#define LIBSUMO_SUBSCRIPTION_API \
-static void subscribe(const std::string& objID, const std::vector<int>& vars = std::vector<int>(), double beginTime = INVALID_DOUBLE_VALUE, double endTime = INVALID_DOUBLE_VALUE); \
-static void subscribeContext(const std::string& objID, int domain, double range, const std::vector<int>& vars = std::vector<int>(), double beginTime = INVALID_DOUBLE_VALUE, double endTime = INVALID_DOUBLE_VALUE); \
-static const SubscriptionResults getAllSubscriptionResults(); \
-static const TraCIResults getSubscriptionResults(const std::string& objID); \
-static const ContextSubscriptionResults getAllContextSubscriptionResults(); \
-static const SubscriptionResults getContextSubscriptionResults(const std::string& objID);
+#define LIBSUMO_SUBSCRIPTION_API                                                                                                                                                                                         \
+    static void subscribe(const std::string& objID, const std::vector<int>& vars = std::vector<int>(), double beginTime = INVALID_DOUBLE_VALUE, double endTime = INVALID_DOUBLE_VALUE);                                  \
+    static void subscribeContext(const std::string& objID, int domain, double range, const std::vector<int>& vars = std::vector<int>(), double beginTime = INVALID_DOUBLE_VALUE, double endTime = INVALID_DOUBLE_VALUE); \
+    static const SubscriptionResults getAllSubscriptionResults();                                                                                                                                                        \
+    static const TraCIResults getSubscriptionResults(const std::string& objID);                                                                                                                                          \
+    static const ContextSubscriptionResults getAllContextSubscriptionResults();                                                                                                                                          \
+    static const SubscriptionResults getContextSubscriptionResults(const std::string& objID);
 
-#define LIBSUMO_SUBSCRIPTION_IMPLEMENTATION(CLASS, DOMAIN) \
-void \
-CLASS::subscribe(const std::string& objID, const std::vector<int>& vars, double beginTime, double endTime) { \
-    libsumo::Helper::subscribe(CMD_SUBSCRIBE_##DOMAIN##_VARIABLE, objID, vars, beginTime, endTime); \
-} \
-void \
-CLASS::subscribeContext(const std::string& objID, int domain, double range, const std::vector<int>& vars, double beginTime, double endTime) { \
-    libsumo::Helper::subscribe(CMD_SUBSCRIBE_##DOMAIN##_CONTEXT, objID, vars, beginTime, endTime, domain, range); \
-} \
-const SubscriptionResults \
-CLASS::getAllSubscriptionResults() { \
-    return mySubscriptionResults; \
-} \
-const TraCIResults \
-CLASS::getSubscriptionResults(const std::string& objID) { \
-    return mySubscriptionResults[objID]; \
-} \
-const ContextSubscriptionResults \
-CLASS::getAllContextSubscriptionResults() { \
-    return myContextSubscriptionResults; \
-} \
-const SubscriptionResults \
-CLASS::getContextSubscriptionResults(const std::string& objID) { \
-    return myContextSubscriptionResults[objID]; \
-}
-
+#define LIBSUMO_SUBSCRIPTION_IMPLEMENTATION(CLASS, DOMAIN)                                                                                        \
+    void                                                                                                                                          \
+    CLASS::subscribe(const std::string& objID, const std::vector<int>& vars, double beginTime, double endTime) {                                  \
+        libsumo::Helper::subscribe(CMD_SUBSCRIBE_##DOMAIN##_VARIABLE, objID, vars, beginTime, endTime);                                           \
+    }                                                                                                                                             \
+    void                                                                                                                                          \
+    CLASS::subscribeContext(const std::string& objID, int domain, double range, const std::vector<int>& vars, double beginTime, double endTime) { \
+        libsumo::Helper::subscribe(CMD_SUBSCRIBE_##DOMAIN##_CONTEXT, objID, vars, beginTime, endTime, domain, range);                             \
+    }                                                                                                                                             \
+    const SubscriptionResults                                                                                                                     \
+    CLASS::getAllSubscriptionResults() {                                                                                                          \
+        return mySubscriptionResults;                                                                                                             \
+    }                                                                                                                                             \
+    const TraCIResults                                                                                                                            \
+    CLASS::getSubscriptionResults(const std::string& objID) {                                                                                     \
+        return mySubscriptionResults[objID];                                                                                                      \
+    }                                                                                                                                             \
+    const ContextSubscriptionResults                                                                                                              \
+    CLASS::getAllContextSubscriptionResults() {                                                                                                   \
+        return myContextSubscriptionResults;                                                                                                      \
+    }                                                                                                                                             \
+    const SubscriptionResults                                                                                                                     \
+    CLASS::getContextSubscriptionResults(const std::string& objID) {                                                                              \
+        return myContextSubscriptionResults[objID];                                                                                               \
+    }
 
 
 // ===========================================================================
@@ -88,14 +87,16 @@ class TraCIException : public std::runtime_error {
 public:
     /** constructor */
     TraCIException(std::string what)
-        : std::runtime_error(what) {}
+        : std::runtime_error(what) {
+    }
 };
 
 /// @name Structures definitions
 /// @{
 
 struct TraCIResult {
-    virtual ~TraCIResult() {}
+    virtual ~TraCIResult() {
+    }
     virtual std::string getString() {
         return "";
     }
@@ -133,7 +134,7 @@ struct TraCIRoadPosition : TraCIResult {
 struct TraCIColor : TraCIResult {
     std::string getString() {
         std::ostringstream os;
-        os << "TraCIColor(" << (int)r << "," << (int)g << "," << (int)b << "," << (int)a << ")";
+        os << "TraCIColor(" << (int) r << "," << (int) g << "," << (int) b << "," << (int) a << ")";
         return os.str();
     }
     unsigned char r, g, b, a;
@@ -146,8 +147,12 @@ typedef std::vector<TraCIPosition> TraCIPositionVector;
 
 
 struct TraCIInt : TraCIResult {
-    TraCIInt() : value(0) {}
-    TraCIInt(int v) : value(v) {}
+    TraCIInt()
+        : value(0) {
+    }
+    TraCIInt(int v)
+        : value(v) {
+    }
     std::string getString() {
         std::ostringstream os;
         os << value;
@@ -158,8 +163,12 @@ struct TraCIInt : TraCIResult {
 
 
 struct TraCIDouble : TraCIResult {
-    TraCIDouble() : value(0.) {}
-    TraCIDouble(double v) : value(v) {}
+    TraCIDouble()
+        : value(0.) {
+    }
+    TraCIDouble(double v)
+        : value(v) {
+    }
     std::string getString() {
         std::ostringstream os;
         os << value;
@@ -170,8 +179,12 @@ struct TraCIDouble : TraCIResult {
 
 
 struct TraCIString : TraCIResult {
-    TraCIString() : value("") {}
-    TraCIString(std::string v) : value(v) {}
+    TraCIString()
+        : value("") {
+    }
+    TraCIString(std::string v)
+        : value(v) {
+    }
     std::string getString() {
         return value;
     }
@@ -194,7 +207,7 @@ struct TraCIStringList : TraCIResult {
 
 
 /// @brief {variable->value}
-typedef std::map<int, std::shared_ptr<TraCIResult> > TraCIResults;
+typedef std::map<int, std::shared_ptr<TraCIResult>> TraCIResults;
 /// @brief {object->{variable->value}}
 typedef std::map<std::string, TraCIResults> SubscriptionResults;
 typedef std::map<std::string, SubscriptionResults> ContextSubscriptionResults;
@@ -202,10 +215,13 @@ typedef std::map<std::string, SubscriptionResults> ContextSubscriptionResults;
 
 class TraCIPhase {
 public:
-    TraCIPhase() {}
-    TraCIPhase(const double _duration, const double _duration1, const double _duration2, const std::string& _phase, int _next=-1)
-        : duration(_duration), duration1(_duration1), duration2(_duration2), phase(_phase), next(_next) {}
-    ~TraCIPhase() {}
+    TraCIPhase() {
+    }
+    TraCIPhase(const double _duration, const double _duration1, const double _duration2, const std::string& _phase, int _next = -1)
+        : duration(_duration), duration1(_duration1), duration2(_duration2), phase(_phase), next(_next) {
+    }
+    ~TraCIPhase() {
+    }
 
     double duration, duration1, duration2;
     std::string phase;
@@ -215,10 +231,13 @@ public:
 
 class TraCILogic {
 public:
-    TraCILogic() {}
+    TraCILogic() {
+    }
     TraCILogic(const std::string& _subID, int _type, int _currentPhaseIndex, const std::vector<TraCIPhase>& _phases = std::vector<TraCIPhase>())
-        : subID(_subID), type(_type), currentPhaseIndex(_currentPhaseIndex), phases(_phases) {}
-    ~TraCILogic() {}
+        : subID(_subID), type(_type), currentPhaseIndex(_currentPhaseIndex), phases(_phases) {
+    }
+    ~TraCILogic() {
+    }
 
     std::string subID;
     int type;
@@ -231,8 +250,10 @@ public:
 class TraCILink {
 public:
     TraCILink(const std::string& _from, const std::string& _via, const std::string& _to)
-        : fromLane(_from), viaLane(_via), toLane(_to) {}
-    ~TraCILink() {}
+        : fromLane(_from), viaLane(_via), toLane(_to) {
+    }
+    ~TraCILink() {
+    }
 
     std::string fromLane;
     std::string viaLane;
@@ -242,12 +263,13 @@ public:
 
 class TraCIConnection {
 public:
-    TraCIConnection() {} // this is needed by SWIG when building a vector of this type, please don't use it
-    TraCIConnection(const std::string& _approachedLane, const bool _hasPrio, const bool _isOpen, const bool _hasFoe,
-                    const std::string _approachedInternal, const std::string _state, const std::string _direction, const double _length)
-        : approachedLane(_approachedLane), hasPrio(_hasPrio), isOpen(_isOpen), hasFoe(_hasFoe),
-          approachedInternal(_approachedInternal), state(_state), direction(_direction), length(_length) {}
-    ~TraCIConnection() {}
+    TraCIConnection() {
+    }  // this is needed by SWIG when building a vector of this type, please don't use it
+    TraCIConnection(const std::string& _approachedLane, const bool _hasPrio, const bool _isOpen, const bool _hasFoe, const std::string _approachedInternal, const std::string _state, const std::string _direction, const double _length)
+        : approachedLane(_approachedLane), hasPrio(_hasPrio), isOpen(_isOpen), hasFoe(_hasFoe), approachedInternal(_approachedInternal), state(_state), direction(_direction), length(_length) {
+    }
+    ~TraCIConnection() {
+    }
 
     std::string approachedLane;
     bool hasPrio;
@@ -321,8 +343,11 @@ struct TraCIBestLanesData {
 
 class TraCIStage {
 public:
-    TraCIStage() {} // only to make swig happy
-    TraCIStage(int _type) : type(_type), depart(-1) {}
+    TraCIStage() {
+    }  // only to make swig happy
+    TraCIStage(int _type)
+        : type(_type), depart(-1) {
+    }
     /// @brief The type of stage (walking, driving, ...)
     int type;
     /// @brief The vehicle type when using a private car or bike
@@ -350,7 +375,7 @@ public:
     /// @brief arbitrary description string
     std::string description;
 };
-}
+}  // namespace libsumo
 
 
 #endif

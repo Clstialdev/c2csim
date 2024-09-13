@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.16)
 
+set(BASE_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
+
 project(sumotest VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Quick QuickControls2 Svg)
 
 qt_standard_project_setup()
 
@@ -16,11 +18,14 @@ qt_add_qml_module(appsumotest
     URI sumotest
     VERSION 1.0
     QML_FILES Main.qml
-    RESOURCES images/car.png
     SOURCES headers/SumoInterface.h
     SOURCES SumoInterface.cpp
     SOURCES geoconverter.h geoconverter.cpp
     RESOURCES images/car2.png
+    RESOURCES images/car.svg
+    RESOURCES images/car-cropped.svg
+    RESOURCES images/car.png
+    RESOURCES fonts/fa.otf
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -36,17 +41,18 @@ set_target_properties(appsumotest PROPERTIES
 
 
 # Add the directory where the sumo-integrator library is located
-include_directories("/home/crowdev/sumo-integrator-master/include")
-include_directories("/home/crowdev/sumo-integrator-master/")
+include_directories("${BASE_PATH}/sumo-integrator-master/include")
+include_directories("${BASE_PATH}/sumo-integrator-master/")
 
 # Link the sumo-integrator library
-link_directories("/home/crowdev/sumo-integrator-master/bin")
+link_directories("${BASE_PATH}/sumo-integrator-master/bin")
 
 
 target_link_libraries(appsumotest
-    PRIVATE Qt6::Quick
-    PRIVATE "/home/crowdev/sumo-integrator-master/bin/libsumointegrator.a"
-    PRIVATE "/home/crowdev/sumo-integrator-master/lib/sumo/libsumo.a"
+    PRIVATE Qt6::Quick Qt6::QuickControls2
+    PRIVATE Qt6::Svg
+    PRIVATE "${BASE_PATH}/sumo-integrator-master/bin/libsumointegrator.a"
+    PRIVATE "${BASE_PATH}/sumo-integrator-master/lib/sumo/libsumo.a"
 )
 
 include(GNUInstallDirs)
@@ -54,4 +60,17 @@ install(TARGETS appsumotest
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+
+add_custom_target(run
+    COMMAND sumo-gui --remote-port 6066 -c "./sumofiles/osm.sumocfg"
+    DEPENDS appsumotest
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+)
+
+add_custom_target(restart
+    COMMAND make clean
+    COMMAND make
+    COMMAND make run
+    DEPENDS clean appsumotest run
 )
